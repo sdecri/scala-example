@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # use glob syntax.
 syntax: glob
 *.ser
@@ -42,3 +43,5 @@ build.log
 
 .cache-main
 .cache-test
+*.log
+
