@@ -42,6 +42,6 @@ build.log
 build.log
 
 .cache-main
-.cache-test
+.cache-tests
 *.log
 
