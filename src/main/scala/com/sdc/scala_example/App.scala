@@ -17,10 +17,13 @@ object App {
         n1.setLat(1.0)
         
         var n2 = new Node
-        n2.setId(1)
+        n2.setId(2)
         n2.setLon(1.0)
-        n2.setLat(2.0)
+        n2.setLat(1.0)
         
+        println("Node: %s".format(n1))
+        println("Node: %s".format(n2))
+        println("%s equals %s".format(n1.getId(), n2.getId()))
         println(n1.equals(n2))
     }
 

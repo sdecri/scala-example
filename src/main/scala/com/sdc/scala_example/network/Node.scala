@@ -9,6 +9,13 @@ class Node {
     private var lon: Double = _
     private var lat: Double = _
 
+    def this(id :Int, lon : Double, lat : Double)= {
+        this()
+        this.id = id
+        this.lon = lon
+        this.lat = lat
+    }
+    
     def getId(): Int = this.id
     def setId(id: Int) = this.id = id
     def getLon(): Double = lon

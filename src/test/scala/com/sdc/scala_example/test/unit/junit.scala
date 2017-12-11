@@ -1,4 +1,4 @@
-package samples
+package com.sdc.scala_example.test.unit
 
 import org.junit._
 import Assert._
