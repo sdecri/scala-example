@@ -16,6 +16,11 @@ class Link {
         this.head = head
     }
     
+    def this(id :Int, tail :Node, head :Node, length :Double) = {
+        this(id, tail, head)
+        this.length = length
+    }
+    
     def getId(): Int = this.id
     def setId(id: Int) = this.id = id
     def getTail() :Node = this.tail
