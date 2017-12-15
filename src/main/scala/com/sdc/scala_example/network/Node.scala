@@ -22,6 +22,10 @@ class Node extends Serializable {
         this.lon = lon
         this.lat = lat
     }
+    
+        def this(id :String, lon : Double, lat : Double) = {
+        this(id.toInt, lon, lat)
+    }
 
     
     

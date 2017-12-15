@@ -28,6 +28,10 @@ class Link {
         this.length = length
         this.speed = speed
     }
+    
+    def this(id: String, tail: Node, head: Node, length: Int, speed: Int) = {
+        this(id.toInt, tail, head, 0, 50)
+    }
 
     def this(id: Int, tail: Node, head: Node) = {
         this(id, tail, head, 0, 50)
@@ -66,6 +70,10 @@ class Link {
 object Link {
 
     val SCHEMA = StructType(List(
-        StructField("id", IntegerType), StructField("src", IntegerType), StructField("dst", IntegerType), StructField("length", IntegerType), StructField("speed", IntegerType)))
+        StructField("id", IntegerType)
+        , StructField("src", IntegerType)
+        , StructField("dst", IntegerType)
+        , StructField("length", IntegerType)
+        , StructField("speed", IntegerType)))
 }
 
