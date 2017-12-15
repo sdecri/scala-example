@@ -16,6 +16,9 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Dataset
 import org.slf4j.LoggerFactory
 import org.graphframes.examples.Graphs
+import org.graphframes.lib.ShortestPaths
+import org.apache.spark.graphx.lib.ShortestPaths
+import org.apache.spark.graphx.Graph
 
 /**
  * @author ${user.name}
@@ -51,27 +54,31 @@ object App {
             linksDF.printSchema()
             linksDF.show()
 
-            val graph : GraphFrame = GraphFrame(nodesDF, linksDF)
-            graph.vertices.show()
+            val gf : GraphFrame = GraphFrame(nodesDF, linksDF)
+            gf.vertices.show()
 
 //            val bfsResult = graph.bfs.fromExpr("id = 1").toExpr("id = 6").run()
 //            bfsResult.show()
+            
+//            val dst = "6"
+//            val gfSpResult = gf.shortestPaths.landmarks(Seq(dst)).run()
+//            gfSpResult.printSchema()
+//            gfSpResult.show()
 
-            val shortestPathResult = graph.shortestPaths.landmarks(Seq("6")).run()
-            LOG.info(shortestPathResult.count().toString())
-            //            val sp = shortestPathResult.collect();
-            //            LOG.info(sp.toString)
-            //            shortestPathResult.select("id", "distances").show()
-
-            val g = Graphs.friends
-            g.vertices.printSchema()
-            g.vertices.show()
-            g.edges.printSchema()
-            g.edges.show()
-            val results = g.shortestPaths.landmarks(Seq("a", "d")).run()
-            results.printSchema()
-            results.show()
-            results.select("id", "distances").show()
+            val gx = Graph(nodes, links)
+            val gxSpResult = ShortestPaths.run(gx, Seq(dst))
+            gfSpResult.printSchema()
+            gfSpResult.show()
+            
+//            val g = Graphs.friends
+//            g.vertices.printSchema()
+//            g.vertices.show()
+//            g.edges.printSchema()
+//            g.edges.show()
+//            val results = g.shortestPaths.landmarks(Seq("a", "d")).run()
+//            results.printSchema()
+//            results.show()
+//            results.select("id", "distances").show()
             
 
         } catch {

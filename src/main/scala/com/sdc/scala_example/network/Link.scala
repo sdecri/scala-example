@@ -5,6 +5,7 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.types.StringType
 
 class Link {
 
@@ -42,7 +43,7 @@ class Link {
      */
     def getTravelTime(): Int = Math.round((length.asInstanceOf[Double] / (speed))).asInstanceOf[Int]
 
-    def toRow(): Row = Row(id, tail.getId, head.getId, length, speed)
+    def toRow(): Row = Row(id.toString(), tail.getId.toString(), head.getId.toString(), length, speed)
 
     def getId(): Int = this.id
     def setId(id: Int) = this.id = id
@@ -70,9 +71,9 @@ class Link {
 object Link {
 
     val SCHEMA = StructType(List(
-        StructField("id", IntegerType)
-        , StructField("src", IntegerType)
-        , StructField("dst", IntegerType)
+        StructField("id", StringType)
+        , StructField("src", StringType)
+        , StructField("dst", StringType)
         , StructField("length", IntegerType)
         , StructField("speed", IntegerType)))
 }
