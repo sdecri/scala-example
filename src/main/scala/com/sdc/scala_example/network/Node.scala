@@ -58,5 +58,10 @@ object Node {
         )        
     )
     
+    def findById(id :Int, nodes :List[Node]) : Option[Node] = {
+        var l = nodes.filter(_.getId() == id)
+        return if (l.isEmpty) None else Some(l(0))
+    }
+    
 }
 

@@ -39,6 +39,9 @@ class TestLink {
         
         var link7 : Link = link1
         assertThat(link1, is(equalTo(link7)))
+        
+        var link8 = new Link(8, n1, n2, 1000, 10)
+        assertThat(link8.getTravelTime(), is(equalTo(100)))
     }
     
 }
