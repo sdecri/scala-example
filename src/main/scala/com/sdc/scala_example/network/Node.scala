@@ -12,11 +12,11 @@ import org.apache.spark.sql.types.IntegerType
 
 class Node extends Serializable {
 
-    private var id: Int = _
+    private var id: Long = _
     private var lon: Double = _
     private var lat: Double = _
 
-    def this(id :Int, lon : Double, lat : Double) = {
+    def this(id :Long, lon : Double, lat : Double) = {
         this()
         this.id = id
         this.lon = lon
@@ -29,8 +29,8 @@ class Node extends Serializable {
 
     
     
-    def getId(): Int = this.id
-    def setId(id: Int) = this.id = id
+    def getId(): Long = this.id
+    def setId(id: Long) = this.id = id
     def getLon(): Double = lon
     def setLon(lon: Double) = this.lon = lon
     def getLat(): Double = lat
@@ -38,7 +38,7 @@ class Node extends Serializable {
 
     def toRow(): Row = Row(id.toString(), lon, lat)
     
-    override def hashCode(): Int = id
+    override def hashCode(): Int = id.toInt
 
     override def equals(that: Any) = {
         that match {
@@ -62,10 +62,13 @@ object Node {
         )        
     )
     
-    def findById(id :Int, nodes :List[Node]) : Option[Node] = {
+    def findById(id :Long, nodes :List[Node]) : Option[Node] = {
         var l = nodes.filter(_.getId() == id)
         return if (l.isEmpty) None else Some(l(0))
     }
+    
+    def fromRow(row :Row) : Node = 
+        new Node(row.getAs[String](1).toLong, row.getAs[Double](2), row.getAs[Double](2))
     
 }
 

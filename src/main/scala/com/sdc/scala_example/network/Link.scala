@@ -6,10 +6,11 @@ import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.types.StringType
+import java.io.Serializable
 
-class Link {
+class Link extends Serializable {
 
-    private var id: Int = _
+    private var id: Long = _
     private var tail: Node = _
     private var head: Node = _
     /**
@@ -21,7 +22,7 @@ class Link {
      */
     private var speed: Int = _
 
-    def this(id: Int, tail: Node, head: Node, length: Int, speed: Int) = {
+    def this(id: Long, tail: Node, head: Node, length: Int, speed: Int) = {
         this()
         this.id = id
         this.tail = tail
@@ -34,7 +35,7 @@ class Link {
         this(id.toInt, tail, head, 0, 50)
     }
 
-    def this(id: Int, tail: Node, head: Node) = {
+    def this(id: Long, tail: Node, head: Node) = {
         this(id, tail, head, 0, 50)
     }
 
@@ -45,8 +46,8 @@ class Link {
 
     def toRow(): Row = Row(id.toString(), tail.getId.toString(), head.getId.toString(), length, speed)
 
-    def getId(): Int = this.id
-    def setId(id: Int) = this.id = id
+    def getId(): Long = this.id
+    def setId(id: Long) = this.id = id
     def getTail(): Node = this.tail
     def setTail(tail: Node) = this.tail = tail
     def getHead(): Node = this.head
@@ -56,7 +57,7 @@ class Link {
     def getSpeed(): Int = this.speed
     def setSpeed(length: Int) = this.speed = speed
 
-    override def hashCode(): Int = id
+    override def hashCode(): Int = id.toInt
 
     override def equals(that: Any) = {
         that match {
@@ -66,6 +67,10 @@ class Link {
             case _ => false
         }
     }
+    
+    override def toString() :String = "ID = %d, TAIL = %d, HEAD = %d, LENGTH = %d, SPEED = %d, TAVEL_TIME = %d"
+    .format(id, tail.getId, head.getId, length, speed, getTravelTime)
+    
 }
 
 object Link {
@@ -76,5 +81,14 @@ object Link {
         , StructField("dst", StringType)
         , StructField("length", IntegerType)
         , StructField("speed", IntegerType)))
+        
+        
+        def fromRow(row :Row, nodes :List[Node]): Link = 
+            new Link(row.getAs[String](1).toLong
+                    , Node.findById(row.getAs[String](2).toLong, nodes).get
+                    , Node.findById(row.getAs[String](3).toLong, nodes).get
+                    , row.getAs[Int](4)
+                    , row.getAs[Int](5)
+                    )
 }
 
