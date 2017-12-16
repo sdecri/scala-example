@@ -59,14 +59,16 @@ class Link extends Serializable {
 
     override def hashCode(): Int = id.toInt
 
+    def canEqual(a: Any) = a.isInstanceOf[Link]
     override def equals(that: Any) = {
         that match {
-            case link: Link => link.id == id && link.tail == tail &&
-                link.head == head &&
-                link.length == length && link.speed == speed
+            case other: Link => this.canEqual(other) && other.id == id && other.tail == tail &&
+                other.head == head &&
+                other.length == length && other.speed == speed
             case _ => false
         }
     }
+
     
     override def toString() :String = "ID = %d, TAIL = %d, HEAD = %d, LENGTH = %d, SPEED = %d, TAVEL_TIME = %d"
     .format(id, tail.getId, head.getId, length, speed, getTravelTime)

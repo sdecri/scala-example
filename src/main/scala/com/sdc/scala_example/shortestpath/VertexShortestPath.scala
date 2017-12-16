@@ -1,28 +1,40 @@
 package com.sdc.scala_example.shortestpath
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 class VertexShortestPath extends Serializable {
 
-    //    private var vertex :VD = _
-    private var minCost: Double = _
-    private var predecessorLink: Long = _
+    private var minCost : Double = _
+    private var predecessorLink : Long = _
 
-    //    def this(vertex :VD, minCost :Double, predecessorLink :Long) = {
-    //        this()
-    //        this.vertex = vertex
-    //        this.minCost = minCost
-    //        this.predecessorLink = predecessorLink
-    //    }
-
-    def this(minCost: Double, predecessorLink: Long) = {
+    def this(minCost : Double, predecessorLink : Long) = {
         this()
         this.minCost = minCost
         this.predecessorLink = predecessorLink
     }
 
-    //    def getVertex() = vertex
-    //    def setVertex(vertex :VD) = this.vertex = vertex
+    override def toString() : String = "MIN_COST = %f, PREDECESSOR_LINK = %d"
+        .format(minCost, predecessorLink)
+
+    override def hashCode : Int = {
+        val prime = 31
+        var result = 1
+        result = prime * result + minCost.toInt;
+        result = prime * result + predecessorLink.toInt;
+        return result
+    }
+    
+    def canEqual(a: Any) = a.isInstanceOf[VertexShortestPath]
+    override def equals(that: Any) = {
+        that match {
+            case other: VertexShortestPath => this.canEqual(other) && 
+            other.minCost == minCost && other.predecessorLink == predecessorLink
+            case _ => false
+        }
+    }
+
     def getMinCost() = minCost
-    def setMinCost(minCost: Double) = this.minCost = minCost
+    def setMinCost(minCost : Double) = this.minCost = minCost
     def getPredecessorLink() = predecessorLink
-    def setPredecessorLink(minCost: Long) = this.predecessorLink = predecessorLink
+    def setPredecessorLink(predecessorLink : Long) = this.predecessorLink = predecessorLink
 }

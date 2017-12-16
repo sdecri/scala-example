@@ -40,9 +40,10 @@ class Node extends Serializable {
     
     override def hashCode(): Int = id.toInt
 
+    def canEqual(a: Any) = a.isInstanceOf[Node]
     override def equals(that: Any) = {
         that match {
-            case other: Node => other.id == id && other.lon == lon && other.lat == lat
+            case other: Node => this.canEqual(other) && other.id == id && other.lon == lon && other.lat == lat
             case _ => false
         }
     }
