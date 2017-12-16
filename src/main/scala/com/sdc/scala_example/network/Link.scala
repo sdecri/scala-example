@@ -11,8 +11,8 @@ import java.io.Serializable
 class Link extends Serializable {
 
     private var id: Long = _
-    private var tail: Node = _
-    private var head: Node = _
+    private var tail: Long = _
+    private var head: Long = _
     /**
      * In meters
      */
@@ -22,7 +22,7 @@ class Link extends Serializable {
      */
     private var speed: Int = _
 
-    def this(id: Long, tail: Node, head: Node, length: Int, speed: Int) = {
+    def this(id: Long, tail: Long, head: Long, length: Int, speed: Int) = {
         this()
         this.id = id
         this.tail = tail
@@ -31,11 +31,11 @@ class Link extends Serializable {
         this.speed = speed
     }
     
-    def this(id: String, tail: Node, head: Node, length: Int, speed: Int) = {
+    def this(id: String, tail: Long, head: Long, length: Int, speed: Int) = {
         this(id.toInt, tail, head, 0, 50)
     }
 
-    def this(id: Long, tail: Node, head: Node) = {
+    def this(id: Long, tail: Long, head: Long) = {
         this(id, tail, head, 0, 50)
     }
 
@@ -44,14 +44,14 @@ class Link extends Serializable {
      */
     def getTravelTime(): Int = Math.round((length.asInstanceOf[Double] / (speed))).asInstanceOf[Int]
 
-    def toRow(): Row = Row(id.toString(), tail.getId.toString(), head.getId.toString(), length, speed)
+    def toRow(): Row = Row(id.toString(), tail.toString(), head.toString(), length, speed)
 
     def getId(): Long = this.id
     def setId(id: Long) = this.id = id
-    def getTail(): Node = this.tail
-    def setTail(tail: Node) = this.tail = tail
-    def getHead(): Node = this.head
-    def setHead(head: Node) = this.head = head
+    def getTail(): Long = this.tail
+    def setTail(tail: Long) = this.tail = tail
+    def getHead(): Long = this.head
+    def setHead(head: Long) = this.head = head
     def getLength(): Int = this.length
     def setLength(length: Int) = this.length = length
     def getSpeed(): Int = this.speed
@@ -71,7 +71,7 @@ class Link extends Serializable {
 
     
     override def toString() :String = "ID = %d, TAIL = %d, HEAD = %d, LENGTH = %d, SPEED = %d, TAVEL_TIME = %d"
-    .format(id, tail.getId, head.getId, length, speed, getTravelTime)
+    .format(id, tail, head, length, speed, getTravelTime)
     
 }
 
@@ -85,10 +85,10 @@ object Link {
         , StructField("speed", IntegerType)))
         
         
-        def fromRow(row :Row, nodes :List[Node]): Link = 
+        def fromRow(row :Row): Link = 
             new Link(row.getAs[String](1).toLong
-                    , Node.findById(row.getAs[String](2).toLong, nodes).get
-                    , Node.findById(row.getAs[String](3).toLong, nodes).get
+                    , row.getAs[String](2).toLong
+                    , row.getAs[String](3).toLong
                     , row.getAs[Int](4)
                     , row.getAs[Int](5)
                     )

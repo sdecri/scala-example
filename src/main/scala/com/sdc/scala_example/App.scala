@@ -37,7 +37,9 @@ object App {
 
             session = SparkSession.builder().config(conf).getOrCreate()
             
-
+            
+            
+            
         } catch {
             case t : Throwable => t.printStackTrace()
         } finally {
