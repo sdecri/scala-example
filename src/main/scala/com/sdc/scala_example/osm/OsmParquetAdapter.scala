@@ -64,7 +64,8 @@ object OsmParquetAdapter {
             for (i <- 0 until nodes.length - 1) {
                 tail = i
                 head = i+1
-                links = links :+ Link(linkIds(i), nodes(tail)._1, nodes(head)._1, 0, 0)
+                
+                links = links :+ Link(linkIds(i), nodes(tail)._1, nodes(head)._1, 0, speed)
             }
 
             links
