@@ -36,7 +36,7 @@ class Node extends Serializable {
     def getLat(): Double = lat
     def setLat(lat: Double) = this.lat = lat
 
-    def toRow(): Row = Row(id.toString(), lon, lat)
+    def toRow(): Row = Row(id.toString(), lat, lon)
     
     override def hashCode(): Int = id.toInt
 
@@ -58,8 +58,8 @@ object Node {
     val SCHEMA = StructType(
         List(
                 StructField("id", StringType)
-                , StructField("lon", DoubleType)
-                , StructField("lat", DoubleType)
+                , StructField("latitude", DoubleType)
+                , StructField("longitude", DoubleType)
         )        
     )
     
@@ -69,7 +69,7 @@ object Node {
     }
     
     def fromRow(row :Row) : Node = 
-        new Node(row.getAs[String](1).toLong, row.getAs[Double](2), row.getAs[Double](2))
+        new Node(row.getAs[String](1).toLong, row.getAs[Double](3), row.getAs[Double](2))
     
 }
 

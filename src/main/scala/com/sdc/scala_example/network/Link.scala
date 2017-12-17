@@ -8,36 +8,7 @@ import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.types.StringType
 import java.io.Serializable
 
-class Link extends Serializable {
-
-    private var id: Long = _
-    private var tail: Long = _
-    private var head: Long = _
-    /**
-     * In meters
-     */
-    private var length: Int = _
-    /**
-     * in m/s
-     */
-    private var speed: Int = _
-
-    def this(id: Long, tail: Long, head: Long, length: Int, speed: Int) = {
-        this()
-        this.id = id
-        this.tail = tail
-        this.head = head
-        this.length = length
-        this.speed = speed
-    }
-    
-    def this(id: String, tail: Long, head: Long, length: Int, speed: Int) = {
-        this(id.toInt, tail, head, 0, 50)
-    }
-
-    def this(id: Long, tail: Long, head: Long) = {
-        this(id, tail, head, 0, 50)
-    }
+case class Link(id: Long, tail: Long, head: Long, length: Int, speed: Int) extends Serializable {
 
     /**
      * @return the link travel time in seconds
@@ -47,15 +18,10 @@ class Link extends Serializable {
     def toRow(): Row = Row(id.toString(), tail.toString(), head.toString(), length, speed)
 
     def getId(): Long = this.id
-    def setId(id: Long) = this.id = id
     def getTail(): Long = this.tail
-    def setTail(tail: Long) = this.tail = tail
     def getHead(): Long = this.head
-    def setHead(head: Long) = this.head = head
     def getLength(): Int = this.length
-    def setLength(length: Int) = this.length = length
     def getSpeed(): Int = this.speed
-    def setSpeed(length: Int) = this.speed = speed
 
     override def hashCode(): Int = id.toInt
 
@@ -86,7 +52,7 @@ object Link {
         
         
         def fromRow(row :Row): Link = 
-            new Link(row.getAs[String](1).toLong
+            Link(row.getAs[String](1).toLong
                     , row.getAs[String](2).toLong
                     , row.getAs[String](3).toLong
                     , row.getAs[Int](4)
