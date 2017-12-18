@@ -4,6 +4,7 @@ import scala.reflect.ClassTag
 
 import org.apache.spark.graphx._
 import com.sdc.scala_example.network.Link
+import org.slf4j.LoggerFactory
 
 /**
  * Computes shortest paths from one source vertex to all vertices, returning a graph where each
@@ -14,19 +15,32 @@ import com.sdc.scala_example.network.Link
  */
 object ShortestPathsCustom extends Serializable {
     
+    private val LOG = LoggerFactory.getLogger(getClass)    
+    
     object COST_FUNCTION extends Enumeration {
         var DISTANCE,TRAVEL_TIME = Value
+        
+        def fromValue(value :String) :COST_FUNCTION.Value = {
+            if(value.equalsIgnoreCase(DISTANCE.toString())) DISTANCE
+            else if(value.equalsIgnoreCase(DISTANCE.toString())) TRAVEL_TIME
+            else
+                throw new IllegalArgumentException("Not valid cost function type: %s. Available values: %s"
+                        .format(value, COST_FUNCTION.values))
+        }
     }
     
-    val INITIAL_COST = Double.PositiveInfinity
+    private val INITIAL_COST = Double.PositiveInfinity
 
-    def createInitialMessage() : ShortestPathMessage = new ShortestPathMessage(INITIAL_COST, -1)
+    private def createInitialMessage() : ShortestPathMessage = new ShortestPathMessage(INITIAL_COST, -1)
 
     /**
      * 
      */
     def run[VD](graph: Graph[VD, Link], source :VertexId, costFunctionType :COST_FUNCTION.Value = COST_FUNCTION.DISTANCE)
     : Graph[VertexShortestPath, Link] = {
+        
+        LOG.info("Run shortest path algorithm with cost function = %s".format(costFunctionType))
+        
         val spGraph = graph.mapVertices { (vid, vertex) =>
             if (vid == source) 
                 new VertexShortestPath(0, -1) 
@@ -73,13 +87,7 @@ object ShortestPathsCustom extends Serializable {
                 msg2
 
         Pregel(spGraph, initialMessage, activeDirection = EdgeDirection.Out)(vertexProgram, sendMessage, mergeMessage)
-        
-        
-        
-        
-        
-        
-        
+
         
     }
 }

@@ -7,18 +7,24 @@ import com.sdc.scala_example.network.Link
 import org.apache.spark.sql.SparkSession
 import com.sdc.scala_example.network.Node
 import org.apache.spark.graphx.Edge
+import org.slf4j.LoggerFactory
 
 object GraphParquetImporter {
+
+    private val LOG = LoggerFactory.getLogger(getClass)
     
-    def importToNetwork(sparkSession :SparkSession, nodesFile :File, linksFile :File) : Graph[Node, Link] = {
+    case class Context(nodesFile : File, linksFile : File){
         
-        val nodesDF = sparkSession.read.parquet(nodesFile.getAbsolutePath)       
-        val linksDF = sparkSession.read.parquet(linksFile.getAbsolutePath)
+        override def toString() :String = "NODES_FILE = %s, LINKS_FILE = %s"
+        .format(nodesFile,linksFile)
+    }
+    
+    def importToNetwork(sparkSession :SparkSession, context :Context) : Graph[Node, Link] = {
+       
+        LOG.info("Import internal formal network parquet with context: %s".format(context))
         
-        nodesDF.printSchema()
-        nodesDF.show()
-        linksDF.printSchema()
-        linksDF.show()
+        val nodesDF = sparkSession.read.parquet(context.nodesFile.getAbsolutePath)       
+        val linksDF = sparkSession.read.parquet(context.linksFile.getAbsolutePath)
         
         val nodesRDD = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
         val edgesRDD = linksDF.rdd.map(row => {

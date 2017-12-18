@@ -21,7 +21,9 @@ class TestImportGraphParquet extends TestWithSparkSession {
         val fileUrlWays = getClass().getResource(fileResourceWays);
         val waysFile = new File(fileUrlWays.getFile());
         
-        val graph = GraphParquetImporter.importToNetwork(getSpark(), nodesFile, waysFile)
+        val context = GraphParquetImporter.Context(nodesFile, waysFile)
+        
+        val graph = GraphParquetImporter.importToNetwork(getSpark(), context)
         
         assertTrue(graph.vertices.count() > 0)
         println(graph.vertices.collect().take(10).mkString(System.lineSeparator()))
