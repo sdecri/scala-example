@@ -19,7 +19,7 @@ class TestImportOsmParquet extends TestWithSparkSession {
         val fileUrlWays = getClass().getResource(fileResourceWays);
         val waysFile = new File(fileUrlWays.getFile());
         
-        OsmParquetImporter.importParquet(getSpark(), nodesFile, waysFile)
+        OsmParquetImporter.importToNetwork(getSpark(), nodesFile, waysFile)
         
         
     }

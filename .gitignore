@@ -45,3 +45,4 @@ build.log
 .cache-tests
 *.log
 dependency-reduced-pom.xml
+nohup.out

@@ -5,20 +5,25 @@ import java.io.File
 import org.apache.spark.graphx.Graph
 import com.sdc.scala_example.network.Link
 import org.apache.spark.sql.SparkSession
+import com.sdc.scala_example.network.Node
+import org.apache.spark.graphx.Edge
 
 object OsmParquetImporter {
     
-    def importParquet[VD](sparkSession :SparkSession, nodesFile :File, waysFile :File) : Graph[VD, Link] = {
+    def importToNetwork(sparkSession :SparkSession, nodesFile :File, linksFile :File) : Graph[Node, Link] = {
         
-        val nodesDF = sparkSession.read.parquet(nodesFile.getAbsolutePath)
-        nodesDF.printSchema()
-        nodesDF.show()
+        val nodesDF = sparkSession.read.parquet(nodesFile.getAbsolutePath)       
+        val linksDF = sparkSession.read.parquet(linksFile.getAbsolutePath)
         
-        val waysDF = sparkSession.read.parquet(waysFile.getAbsolutePath)
-        waysDF.printSchema()
-        waysDF.show()
+        val nodesRdd = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
+        val edgesRDD = linksDF.rdd.map(row => {
+            val link = Link.fromRow(row)
+            Edge(link.getTail(),link.getHead(), link)
+        })
+
         
-        return null
+        val graph = Graph(nodesRdd, edgesRDD)
+        graph
     }
     
     

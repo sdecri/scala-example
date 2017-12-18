@@ -7,21 +7,25 @@ import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.types.StringType
 import java.io.Serializable
+import org.apache.spark.sql.types.FloatType
 
-case class Link(id: Long, tail: Long, head: Long, length: Int, speed: Int) extends Serializable {
+/**
+ * length in meters and speed in m/s
+ */
+case class Link(id: Long, tail: Long, head: Long, length: Float, speed: Float) extends Serializable {
 
     /**
      * @return the link travel time in seconds
      */
-    def getTravelTime(): Int = Math.round((length.asInstanceOf[Double] / (speed))).asInstanceOf[Int]
+    def getTravelTime(): Int = Math.round((length / (speed)))
 
     def toRow(): Row = Row(id.toString(), tail.toString(), head.toString(), length, speed)
 
     def getId(): Long = this.id
     def getTail(): Long = this.tail
     def getHead(): Long = this.head
-    def getLength(): Int = this.length
-    def getSpeed(): Int = this.speed
+    def getLength(): Float = this.length
+    def getSpeed(): Float = this.speed
 
     override def hashCode(): Int = id.toInt
 
@@ -47,16 +51,16 @@ object Link {
         StructField("id", StringType)
         , StructField("src", StringType)
         , StructField("dst", StringType)
-        , StructField("length", IntegerType)
-        , StructField("speed", IntegerType)))
+        , StructField("length", FloatType)
+        , StructField("speed", FloatType)))
         
         
         def fromRow(row :Row): Link = 
             Link(row.getAs[String](1).toLong
                     , row.getAs[String](2).toLong
                     , row.getAs[String](3).toLong
-                    , row.getAs[Int](4)
-                    , row.getAs[Int](5)
+                    , row.getAs[Float](4)
+                    , row.getAs[Float](5)
                     )
 }
 

@@ -1,4 +1,4 @@
-package com.sdc.scala_example.osm;
+package com.sdc.scala_example.geometry;
 
 import java.util.List;
 import java.util.Random;
