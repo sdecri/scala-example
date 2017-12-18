@@ -14,6 +14,9 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sdc.scala_example.geometry.GeometryUtils;
+import com.vividsolutions.jts.geom.Coordinate;
+
 
 /**
  * This class is used to read and parse the command line arguments.
@@ -182,6 +185,20 @@ public class CommandLineManager {
         }
         appContext.setLinksRepartitionOutput(linksRepartitionOutput);
 
+        Double spSourceLon = null;
+        if (cli.hasOption(PARAMETER.SP_SOURCE_LON.getLongOpt())) {
+            String spSourceLonValue = cli.getOptionValue(PARAMETER.SP_SOURCE_LON.getLongOpt());
+            spSourceLon = ParameterParser.parse(PARAMETER.SP_SOURCE_LON, spSourceLonValue, (input) -> Double.parseDouble(input));
+        }
+        
+        Double spSourceLat = null;
+        if (cli.hasOption(PARAMETER.SP_SOURCE_LAT.getLongOpt())) {
+            String spSourceLatValue = cli.getOptionValue(PARAMETER.SP_SOURCE_LAT.getLongOpt());
+            spSourceLat = ParameterParser.parse(PARAMETER.SP_SOURCE_LAT, spSourceLatValue, (input) -> Double.parseDouble(input));
+        }
+        
+        appContext.setSpSource(GeometryUtils.GEOMETRY_FACTORY.createPoint(new Coordinate(spSourceLon, spSourceLat)));
+        
         return appContext;
     }
 

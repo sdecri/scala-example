@@ -5,6 +5,10 @@ import scala.reflect.ClassTag
 import org.apache.spark.graphx._
 import com.sdc.scala_example.network.Link
 import org.slf4j.LoggerFactory
+import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.types.LongType
+import org.apache.spark.sql.types.DoubleType
+import org.apache.spark.sql.types.StructField
 
 /**
  * Computes shortest paths from one source vertex to all vertices, returning a graph where each
@@ -29,7 +33,16 @@ object ShortestPathsCustom extends Serializable {
         }
     }
     
-    private val INITIAL_COST = Double.PositiveInfinity
+    val VERTEX_SHORTEST_PATH_SCHEMA = StructType(
+        List(
+                StructField("id", LongType)
+                , StructField("minCost", DoubleType)
+                , StructField("predecessor", LongType)
+        )        
+    )
+ 
+    
+    val INITIAL_COST = Double.PositiveInfinity
 
     private def createInitialMessage() : ShortestPathMessage = new ShortestPathMessage(INITIAL_COST, -1)
 

@@ -3,6 +3,9 @@
  */
 package com.sdc.scala_example.command_line;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
+
 /**
  * @author Simone De Cristofaro
  *         Dec 18, 2017
@@ -10,21 +13,21 @@ package com.sdc.scala_example.command_line;
 public class AppContext {
 
     private String sparkMaster;
-    
+
     /**
      * @return the {@link AppContext#sparkMaster}
      */
     public String getSparkMaster() {
-    
+
         return sparkMaster;
     }
 
-    
     /**
-     * @param sparkMaster the {@link AppContext#sparkMaster} to set
+     * @param sparkMaster
+     *            the {@link AppContext#sparkMaster} to set
      */
     public void setSparkMaster(String sparkMaster) {
-    
+
         this.sparkMaster = sparkMaster;
     }
 
@@ -37,26 +40,45 @@ public class AppContext {
     private Integer linksRepartitionOutput;
     private String outputDir;
     private String costFunction;
+    private Point spSource;
 
     
+
+
+    
+    /**
+     * @return the {@link AppContext#spSource}
+     */
+    public Point getSpSource() {
+    
+        return spSource;
+    }
+
+    
+    /**
+     * @param spSource the {@link AppContext#spSource} to set
+     */
+    public void setSpSource(Point spSource) {
+    
+        this.spSource = spSource;
+    }
+
     /**
      * @return the {@link AppContext#costFunction}
      */
     public String getCostFunction() {
-    
+
         return costFunction;
     }
 
-
-    
     /**
-     * @param costFunction the {@link AppContext#costFunction} to set
+     * @param costFunction
+     *            the {@link AppContext#costFunction} to set
      */
     public void setCostFunction(String costFunction) {
-    
+
         this.costFunction = costFunction;
     }
-
 
     /**
      * @return the {@link AppContext#runType}

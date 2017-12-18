@@ -38,3 +38,5 @@ class VertexShortestPath extends Serializable {
     def getPredecessorLink() = predecessorLink
     def setPredecessorLink(predecessorLink : Long) = this.predecessorLink = predecessorLink
 }
+
+

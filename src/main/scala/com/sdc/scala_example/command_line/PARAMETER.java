@@ -22,6 +22,8 @@ public enum PARAMETER {
     ,NODES_REPARTITION_OUTPUT ("nodes-repartition-output","Repartition of the converted (from osm) nodes.", true, Integer.class, false)
     ,LINKS_REPARTITION_OUTPUT ("links-repartition-output","Repartition of the converted (from link) links.", true, Integer.class, false)
     ,SP_COST_FUNCTION ("sp-cost-function","Repartition of the converted (from link) links.", true, String.class, false)    
+    ,SP_SOURCE_LON ("sp-source-lon","Longitude in wgs84 of the shortest path source point", true, Integer.class, false)
+    ,SP_SOURCE_LAT ("sp-source-lon","Latitude in wgs84 of the shortest path source point", true, Integer.class, false)    
     ,OUTOUT_DIR ( "output-dir","Output directory file path.", true, String.class, true)
     ;
     

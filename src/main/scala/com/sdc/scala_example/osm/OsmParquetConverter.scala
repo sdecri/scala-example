@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory
  */
 object OsmParquetConverter {
     
-    private type nodeType = (Long,Double,Double)
+    private type nodeType = (Int, Long, Double, Double)
     
     private val LOG = LoggerFactory.getLogger(getClass)
     
@@ -79,10 +79,12 @@ object OsmParquetConverter {
         val roundAboutTag = "junction"
         val roundAboutValue = "roundabout"
         val roadTag = "highway"
-        val wayNodesDF = waysDF.filter(array_contains($"tags.key", roadTag))
-            .where($"id" === 26984518 || $"id" === 82222601 || $"id" === 138006028)
-            .select($"id".as("wayId"), $"tags", explode($"nodes").as("indexedNode"))
-            .withColumn("linkId", monotonically_increasing_id())
+        val wayFiteredDF = waysDF.filter(array_contains($"tags.key", roadTag))
+//        .where(($"id" === 26984518 || $"id" === 82222601 || $"id" === 138006028))
+        
+        
+        val wayNodesDF = wayFiteredDF.select($"id".as("wayId"), $"tags", explode($"nodes").as("indexedNode"))
+        .withColumn("linkId", monotonically_increasing_id())
             
         wayNodesDF.cache()
         val totalBidirectionalLinks = wayNodesDF.count()
@@ -92,9 +94,9 @@ object OsmParquetConverter {
         var nodesInLinksDF = nodeLinkJoinDF.select($"id", $"latitude", $"longitude")
             
         val wayDF = nodeLinkJoinDF.groupBy($"wayId", $"tags")
-            .agg(collect_list(struct($"indexedNode.index", $"indexedNode.nodeId", $"latitude", $"longitude")).as("nodes")
-                    , collect_list($"linkId").as("linkIds"))
-
+        .agg(collect_list(struct($"indexedNode.index", $"indexedNode.nodeId", $"latitude", $"longitude")).as("nodes")
+        , collect_list($"linkId").as("linkIds"))
+                            
         var linkDS = wayDF.flatMap((row : Row) => {
 
             var tags = row.getAs[WrappedArray[Row]](1)
@@ -111,7 +113,10 @@ object OsmParquetConverter {
             
             speed = speed / 3.6
 
-            var nodes = row.getAs[WrappedArray[Row]](2).map(r => (r.getAs[Long](1), r.getAs[Double](2), r.getAs[Double](3))).array
+            var nodes = row.getAs[WrappedArray[Row]](2)
+            .map(r => (r.getInt(0), r.getAs[Long](1), r.getAs[Double](2), r.getAs[Double](3))).array
+            .sortBy(x => x._1)
+            
             var linkIds = row.getAs[WrappedArray[Long]](3).toArray
             var links : List[Link] = List.empty[Link]
 
@@ -139,13 +144,13 @@ object OsmParquetConverter {
     
     private def createLink(tail : nodeType, head :nodeType, linkId :Long, speed :Double) :Link = {
 
-        val tailLon = tail._2
-        val tailLat = tail._3
-        val headLon = head._2
-        val headLat = head._3
+        val tailLon = tail._3
+        val tailLat = tail._4
+        val headLon = head._3
+        val headLat = head._4
 
         val length = GeometryUtils.getDistance(tailLon, tailLat, headLon, headLat)
-        Link(linkId, tail._1, head._1, length.toFloat, speed.toFloat)
+        Link(linkId, tail._2, head._2, length.toFloat, speed.toFloat)
     }
     
     

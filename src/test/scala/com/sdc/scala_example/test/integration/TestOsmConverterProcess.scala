@@ -8,6 +8,7 @@ import java.io.File
 import org.hamcrest.Matchers._
 import org.junit.Assert._
 import com.sdc.scala_example.command_line.RUN_TYPE
+import org.apache.spark.sql.SQLContext
 
 @Test
 class TestOsmConverterProcess extends TestWithSparkSession {
@@ -15,6 +16,10 @@ class TestOsmConverterProcess extends TestWithSparkSession {
     @Test
     def testProcess() = {
 
+        val sqlContext = new SQLContext(getSpark().sparkContext)
+        import sqlContext.implicits._
+
+        
         // clean output directory
         val outputDir : String = "target/test/integration/osm_converter/testProcess/"
         deleteDirectory(outputDir)
@@ -22,10 +27,10 @@ class TestOsmConverterProcess extends TestWithSparkSession {
         println("Output dir clean? %s".format(!outputDirFile.exists()))
 
         val fileResourceNodes = "/networks/osm/casal-bertone/casal-bertone-node.parquet";
-        val fileUrlNodes = getClass().getResource(fileResourceNodes);
+        val fileUrlNodes = this.getClass().getResource(fileResourceNodes);
 
         val fileResourceWays = "/networks/osm/casal-bertone/casal-bertone-way.parquet";
-        val fileUrlWays = getClass().getResource(fileResourceWays);
+        val fileUrlWays = this.getClass().getResource(fileResourceWays);
 
         val linksRepartition = 3
 
@@ -54,9 +59,28 @@ class TestOsmConverterProcess extends TestWithSparkSession {
         assertEquals(linksRepartition, outputFiles.length);
 
         val linksDF = getSpark().read.parquet(expectedLinksFile.getAbsolutePath)
+        linksDF.cache
         linksDF.show()
         assertTrue(linksDF.count() > 0)
-
+        
+        var actual = linksDF.select("*").where($"tail" === 957255602 && $"head" === 957254675).count()
+        assertThat(actual, is(equalTo(1l)))
+        
+        actual = linksDF.select("*").where($"tail" === 957254675 && $"head" === 957255602).count()
+        assertThat(actual, is(equalTo(0l)))
+        
+        actual = linksDF.select("*").where($"tail" === 295781343 && $"head" === 296057855).count()
+        assertThat(actual, is(equalTo(1l)))
+        
+        actual = linksDF.select("*").where($"tail" === 296057855 && $"head" === 295781343).count()
+        assertThat(actual, is(equalTo(1l)))
+        
+        actual = linksDF.select("*").where($"tail" === 295778585 && $"head" === 295780015).count()
+        assertThat(actual, is(equalTo(1l)))
+        
+        actual = linksDF.select("*").where($"tail" === 295780015 && $"head" === 295778585).count()
+        assertThat(actual, is(equalTo(0l)))        
+        
     }
 
 
