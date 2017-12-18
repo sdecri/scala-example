@@ -28,6 +28,7 @@ import com.sdc.scala_example.command_line.AppContext
 import com.sdc.scala_example.shortestpath.VertexShortestPath
 import com.sdc.scala_example.geometry.GeometryUtils
 import com.vividsolutions.jts.geom.Point
+import org.apache.spark.sql.SQLContext
 
 /**
  * @author ${user.name}
@@ -80,8 +81,14 @@ object App {
     }
 
     private def runShortestPath(appContext : AppContext, session : org.apache.spark.sql.SparkSession) = {
+        
+
+        val sqlContext = new SQLContext(session.sparkContext)
+        import sqlContext.implicits._
+        
         val context = GraphParquetImporter.Context(new File(appContext.getNodesFilePath), new File(appContext.getLinksFilePath))
-        val graph = GraphParquetImporter.importToNetwork(session, context)
+        val network = GraphParquetImporter.importToNetwork(session, context)
+        val graph = network.graph
         graph.cache()
         LOG.info("Graph number of vertices: %d".format(graph.vertices.count()))
         LOG.info("Graph number of edges: %d".format(graph.edges.count()))
@@ -92,7 +99,10 @@ object App {
         var ur = GeometryUtils.determineCoordinateInDistance(sourcePoint.getX, sourcePoint.getY, 45, distanceBBox)
         var bl = GeometryUtils.determineCoordinateInDistance(sourcePoint.getX, sourcePoint.getY, 45 + 180, distanceBBox)
         //todo_here
-        var bbox = GeometryUtils.createPolygonFromBounds(bl.x, bl.y, ur.x, ur.y)
+        var nodeDF = network.nodesDF
+        nodeDF.cache
+        var nodesInBBox = nodeDF.select("*")
+        .where($"longitude" <= ur.x && $"longitude" >= bl.x && $"latitude" <= ur.y && $"latitude" >= bl.y) 
         
         val sourceId = 101179103
         

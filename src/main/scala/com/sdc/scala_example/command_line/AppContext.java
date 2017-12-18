@@ -3,7 +3,6 @@
  */
 package com.sdc.scala_example.command_line;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
 /**

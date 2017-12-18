@@ -8,6 +8,8 @@ import org.apache.spark.sql.SparkSession
 import com.sdc.scala_example.network.Node
 import org.apache.spark.graphx.Edge
 import org.slf4j.LoggerFactory
+import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Row
 
 object GraphParquetImporter {
 
@@ -19,7 +21,9 @@ object GraphParquetImporter {
         .format(nodesFile,linksFile)
     }
     
-    def importToNetwork(sparkSession :SparkSession, context :Context) : Graph[Node, Link] = {
+    case class ImportResult(graph :Graph[Node, Link], nodesDF :Dataset[Row], linksDF :Dataset[Row])
+    
+    def importToNetwork(sparkSession :SparkSession, context :Context) :ImportResult = {
        
         LOG.info("Import internal formal network parquet with context: %s".format(context))
         
@@ -34,7 +38,7 @@ object GraphParquetImporter {
 
         
         val graph = Graph(nodesRDD, edgesRDD)
-        graph
+        ImportResult(graph, nodesDF, linksDF)
     }
     
     
