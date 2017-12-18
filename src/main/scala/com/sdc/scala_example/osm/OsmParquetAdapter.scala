@@ -8,6 +8,7 @@ import com.sdc.scala_example.network.Link
 import scala.collection.mutable.WrappedArray
 import java.util.Map
 import com.sdc.scala_example.geometry.GeometryUtils
+import org.slf4j.LoggerFactory
 
 /**
  * Class that import osm parquet produced with osm-parquetizer
@@ -16,38 +17,51 @@ import com.sdc.scala_example.geometry.GeometryUtils
  */
 object OsmParquetAdapter {
     
+    val LOG = LoggerFactory.getLogger(OsmParquetAdapter.getClass)
+    
     case class Context(nodesFile : File, waysFile : File, outputDir : String
-            , nodesRepartition :Int = -1, linksRepartition :Int = -1)
+            , nodesRepartition :Int = -1, linksRepartition :Int = -1){
+        
+        override def toString() :String = "NODES = %s, WAYS = %s, OUTPUT_DIR = %s, NODES_REPARTITION = %d, LINKS_REPARTITOIN = %d"
+        .format(nodesFile,waysFile,outputDir,nodesRepartition,linksRepartition)
+    }
     
 
     def convertToNetwork[VD](sparkSession : SparkSession, context :Context) : Unit = {
 
-//        println("Block size: " +  sparkSession.sparkContext.hadoopConfiguration.getInt("dfs.blocksize", 0))
-//        println("Parquet Block size: " + sparkSession.sparkContext.hadoopConfiguration.getInt("parquet.block.size", 0))
-//        sparkSession.sparkContext.hadoopConfiguration.setInt("dfs.blocksize", 1024 * 1024 * 4)
-//        sparkSession.sparkContext.hadoopConfiguration.setInt("parquet.block.size", 1024 * 1024 * 4)
-//        println("Block size: " +  sparkSession.sparkContext.hadoopConfiguration.getInt("dfs.blocksize", 0))
-//        println("Parquet Block size: " + sparkSession.sparkContext.hadoopConfiguration.getInt("parquet.block.size", 0))
-
+        LOG.info("Convert OSM parquet to internal network parquet with context: %s".format(context))
         
-        var nodeDF = persistNodes(sparkSession, context)
-        persistLinks(sparkSession, nodeDF, context)
-
-    }
-
-    def persistNodes(sparkSession : org.apache.spark.sql.SparkSession, context :Context) : DataFrame = {
-        val nodesOsmDF = sparkSession.read.parquet(context.nodesFile.getAbsolutePath)
-
-        var nodesParquetFilePath = context.outputDir + "nodes"
-        var nodeDF = nodesOsmDF.select("id", "latitude", "longitude")
+        var allNodeDF = convertNodes(sparkSession, context)
+        allNodeDF.cache()
+        
+        LOG.info("Number of all imported nodes: %d".format(allNodeDF.count()))
+        
+        var net = convertLinks(sparkSession, allNodeDF, context)
+        
+        val nodesParquetFilePath = context.outputDir + "nodes"
+        var nodeDF = net._1
         if(context.nodesRepartition > 0)
             nodeDF = nodeDF.repartition(context.nodesRepartition)
-        nodeDF.cache()
         nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)
-        nodeDF
+        
+        LOG.info("Number of network nodes: %d".format(nodeDF.count()))
+        
+        val linksParquetFilePath = context.outputDir + "links"
+        var linkDS = net._2
+        linkDS.cache()
+        if(context.linksRepartition > 0)
+            linkDS = linkDS.repartition(context.linksRepartition)
+        linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
+        LOG.info("Number of network links: %d".format(linkDS.count()))
+
     }
 
-    def persistLinks(sparkSession : org.apache.spark.sql.SparkSession, nodeDF : DataFrame, context :Context) = {
+    def convertNodes(sparkSession : org.apache.spark.sql.SparkSession, context :Context) : DataFrame = {
+        val nodesOsmDF = sparkSession.read.parquet(context.nodesFile.getAbsolutePath)
+        nodesOsmDF.select("id", "latitude", "longitude")
+    }
+
+    def convertLinks(sparkSession : org.apache.spark.sql.SparkSession, nodeDF : DataFrame, context :Context) = {
 
         val sqlContext = new SQLContext(sparkSession.sparkContext)
         import sqlContext.implicits._
@@ -60,10 +74,14 @@ object OsmParquetAdapter {
         val wayNodesDF = waysDF.filter(array_contains($"tags.key", roadTag))
             .select($"id".as("wayId"), $"tags", explode($"nodes").as("indexedNode"))
             .withColumn("linkId", monotonically_increasing_id())
-
-        val wayDF = nodeDF.join(wayNodesDF, $"indexedNode.nodeId" === nodeDF("id"))
-            .groupBy($"wayId", $"tags")
-            .agg(collect_list(struct($"indexedNode.index", $"indexedNode.nodeId", $"latitude", $"longitude")).as("nodes"), collect_list($"linkId").as("linkIds"))
+            
+        var nodeLinkJoinDF = nodeDF.join(wayNodesDF, $"indexedNode.nodeId" === nodeDF("id"))
+        nodeLinkJoinDF.cache()
+        var nodesInLinksDF = nodeLinkJoinDF.select($"id", $"latitude", $"longitude")
+            
+        val wayDF = nodeLinkJoinDF.groupBy($"wayId", $"tags")
+            .agg(collect_list(struct($"indexedNode.index", $"indexedNode.nodeId", $"latitude", $"longitude")).as("nodes")
+                    , collect_list($"linkId").as("linkIds"))
 
         var linkDS = wayDF.flatMap((row : Row) => {
 
@@ -99,11 +117,7 @@ object OsmParquetAdapter {
             links
         })
 
-        var linksParquetFilePath = context.outputDir + "links"
-        if(context.linksRepartition > 0)
-            linkDS = linkDS.repartition(context.linksRepartition)
-        linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
-
+        (nodesInLinksDF, linkDS)
     }
 
 }
