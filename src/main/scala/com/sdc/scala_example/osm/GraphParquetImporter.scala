@@ -8,21 +8,26 @@ import org.apache.spark.sql.SparkSession
 import com.sdc.scala_example.network.Node
 import org.apache.spark.graphx.Edge
 
-object OsmParquetImporter {
+object GraphParquetImporter {
     
     def importToNetwork(sparkSession :SparkSession, nodesFile :File, linksFile :File) : Graph[Node, Link] = {
         
         val nodesDF = sparkSession.read.parquet(nodesFile.getAbsolutePath)       
         val linksDF = sparkSession.read.parquet(linksFile.getAbsolutePath)
         
-        val nodesRdd = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
+        nodesDF.printSchema()
+        nodesDF.show()
+        linksDF.printSchema()
+        linksDF.show()
+        
+        val nodesRDD = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
         val edgesRDD = linksDF.rdd.map(row => {
             val link = Link.fromRow(row)
             Edge(link.getTail(),link.getHead(), link)
         })
 
         
-        val graph = Graph(nodesRdd, edgesRDD)
+        val graph = Graph(nodesRDD, edgesRDD)
         graph
     }
     

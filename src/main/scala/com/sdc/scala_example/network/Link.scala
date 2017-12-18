@@ -17,7 +17,7 @@ case class Link(id: Long, tail: Long, head: Long, length: Float, speed: Float) e
     /**
      * @return the link travel time in seconds
      */
-    def getTravelTime(): Int = Math.round((length / (speed)))
+    def getTravelTime(): Float = length / (speed)
 
     def toRow(): Row = Row(id.toString(), tail.toString(), head.toString(), length, speed)
 
@@ -40,7 +40,7 @@ case class Link(id: Long, tail: Long, head: Long, length: Float, speed: Float) e
     }
 
     
-    override def toString() :String = "ID = %d, TAIL = %d, HEAD = %d, LENGTH = %d, SPEED = %d, TAVEL_TIME = %d"
+    override def toString() :String = "ID = %d, TAIL = %d, HEAD = %d, LENGTH = %f, SPEED = %f, TAVEL_TIME = %f"
     .format(id, tail, head, length, speed, getTravelTime)
     
 }
@@ -56,11 +56,11 @@ object Link {
         
         
         def fromRow(row :Row): Link = 
-            Link(row.getAs[String](1).toLong
-                    , row.getAs[String](2).toLong
-                    , row.getAs[String](3).toLong
-                    , row.getAs[Float](4)
-                    , row.getAs[Float](5)
+            Link(row.getLong(0)
+                    , row.getLong(1)
+                    , row.getLong(2)
+                    , row.getFloat(3)
+                    , row.getFloat(4)
                     )
 }
 

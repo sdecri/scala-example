@@ -9,6 +9,7 @@ import org.apache.spark.sql.types.StringType
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.types.LongType
 
 class Node extends Serializable {
 
@@ -57,7 +58,7 @@ object Node {
     
     val SCHEMA = StructType(
         List(
-                StructField("id", StringType)
+                StructField("id", LongType)
                 , StructField("latitude", DoubleType)
                 , StructField("longitude", DoubleType)
         )        
@@ -69,7 +70,9 @@ object Node {
     }
     
     def fromRow(row :Row) : Node = 
-        new Node(row.getAs[String](1).toLong, row.getAs[Double](3), row.getAs[Double](2))
+        new Node(row.getLong(0)
+                , row.getDouble(1)
+                , row.getDouble(2))
     
 }
 

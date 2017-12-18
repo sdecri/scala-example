@@ -17,7 +17,7 @@ class TestLink {
         
         var link1 : Link = Link(1, n1.getId(), n2.getId(), 100, 50)
         
-        var link2 : Link = Link(1, n1.getId(), n2.getId(), 100, 500)
+        var link2 : Link = Link(1, n1.getId(), n2.getId(), 100, 50)
         assertThat(link1, is(equalTo(link2)))
         
         var link3 : Link = Link(1, n1.getId(), n3.getId(), 100, 50)
@@ -36,7 +36,7 @@ class TestLink {
         assertThat(link1, is(equalTo(link7)))
         
         var link8 = Link(8, n1.getId(), n2.getId(), 1000, 10)
-        assertThat(link8.getTravelTime(), is(equalTo(100)))
+        assertThat(link8.getTravelTime(), is(equalTo(100.0f)))
     }
     
 }
