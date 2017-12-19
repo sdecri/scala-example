@@ -14,7 +14,8 @@ import org.apache.commons.cli.OptionBuilder;
 public enum PARAMETER {
     SPARK_MASTER ("spark-master","Master url of the cluster (e.g. spark://23.195.26.187:7077).", true, String.class, false)
     ,RUN_TYPE( "run-type",String.format("Run type. Available values: %s."
-            , Arrays.toString(com.sdc.scala_example.command_line.RUN_TYPE.getValues().toArray())), true, String.class, true)
+            , Arrays.toString(com.sdc.scala_example.command_line.RUN_TYPE.getValues().toArray()))
+            , true, String.class, false)
     ,OSM_NODES_FILE ( "osm-nodes-file","Parquet osm nodes file path.", true, String.class, false)
     ,OSM_WAYS_FILE ( "osm-ways-file","Parquet osm ways file path.", true, String.class, false)
     ,NODES_FILE ( "nodes-file","Parquet internal network format nodes file path.", true, String.class, false)
@@ -28,7 +29,7 @@ public enum PARAMETER {
     ,SP_NEAREST_ATTEMPS ("sp-nearest-attemps","The number of attemps to search for the nearest node to the source point."
             + " In each attemp the first search distance is enlarged by the extension factor parameter", true, Integer.class, false)
     ,SP_NEAREST_FACTOR ("sp-nearest-factor","Extension factor used to enlarge the distance in which to search the nearest node", true, Integer.class, false)    
-    ,OUTOUT_DIR ( "output-dir","Output directory file path.", true, String.class, true)
+    ,OUTOUT_DIR ( "output-dir","Output directory file path.", true, String.class, false)
     ;
     
     private String longOpt;

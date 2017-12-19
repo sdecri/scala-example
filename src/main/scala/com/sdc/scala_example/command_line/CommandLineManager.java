@@ -283,7 +283,7 @@ public class CommandLineManager {
 
     private StringBuilder createUsageMessage() {
 
-        StringBuilder usage = new StringBuilder("Test spark app for MDF.");
+        StringBuilder usage = new StringBuilder("Spark graphx trial");
         usage.append(System.lineSeparator());
         usage.append(COMMAND_NAME).append(" [OPTIONS]");
         return usage;
