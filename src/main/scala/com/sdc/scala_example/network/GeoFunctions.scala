@@ -48,11 +48,8 @@ object GeoFunctions {
                 .where($"longitude" <= ur.x && $"longitude" >= bl.x && $"latitude" <= ur.y && $"latitude" >= bl.y)
                 .withColumn(distanceColumn, computeDistance(sourcePoint.getX, sourcePoint.getY)($"longitude", $"latitude"))
                 .orderBy(asc(distanceColumn))
-//                .drop(col(distanceColumn))
+                .drop(col(distanceColumn))
                 .collect()
-
-                //debug_sdc
-            println(nearestNodeList.mkString(System.lineSeparator()))
                 
             if (!nearestNodeList.isEmpty)
                 nearestNodeRow = Some(nearestNodeList(0))
