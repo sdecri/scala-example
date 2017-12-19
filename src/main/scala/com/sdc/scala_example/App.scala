@@ -29,6 +29,8 @@ import com.sdc.scala_example.shortestpath.VertexShortestPath
 import com.sdc.scala_example.geometry.GeometryUtils
 import com.vividsolutions.jts.geom.Point
 import org.apache.spark.sql.SQLContext
+import com.sdc.scala_example.network.GeoFunctions
+import com.sdc.scala_example.exception.NodeNotFoundException
 
 /**
  * @author ${user.name}
@@ -48,6 +50,8 @@ object App {
         val commandLineManager : CommandLineManager = CommandLineManager.newBuilder().withArgs(args).build();
         if (!commandLineManager.hasHelp()) {
 
+            LOG.info(commandLineManager.getCurrentConfigParameterMessage)
+            
             var session : SparkSession = null
             try {
                 val appContext = commandLineManager.parse()
@@ -82,10 +86,6 @@ object App {
 
     private def runShortestPath(appContext : AppContext, session : org.apache.spark.sql.SparkSession) = {
         
-
-        val sqlContext = new SQLContext(session.sparkContext)
-        import sqlContext.implicits._
-        
         val context = GraphParquetImporter.Context(new File(appContext.getNodesFilePath), new File(appContext.getLinksFilePath))
         val network = GraphParquetImporter.importToNetwork(session, context)
         val graph = network.graph
@@ -94,17 +94,13 @@ object App {
         LOG.info("Graph number of edges: %d".format(graph.edges.count()))
         val costFunction = COST_FUNCTION.fromValue(appContext.getCostFunction)
         
-        val sourcePoint :Point = appContext.getSpSource
-        var distanceBBox = 1000
-        var ur = GeometryUtils.determineCoordinateInDistance(sourcePoint.getX, sourcePoint.getY, 45, distanceBBox)
-        var bl = GeometryUtils.determineCoordinateInDistance(sourcePoint.getX, sourcePoint.getY, 45 + 180, distanceBBox)
-        //todo_here
-        var nodeDF = network.nodesDF
-        nodeDF.cache
-        var nodesInBBox = nodeDF.select("*")
-        .where($"longitude" <= ur.x && $"longitude" >= bl.x && $"latitude" <= ur.y && $"latitude" >= bl.y) 
+        val sourceNodeOption = GeoFunctions.getNearestNode(appContext.getSpSource, network.nodesDF, session
+                , appContext.getSpNearestDistance, appContext.getSpNearestAttempts, appContext.getSpNearestFactor) 
         
-        val sourceId = 101179103
+        if(sourceNodeOption.isEmpty)
+            throw new NodeNotFoundException("No node found nearest to the specified geographic point: %s".format(appContext.getSpSource))
+        
+        val sourceId = sourceNodeOption.get.getId
         
         val spResult = ShortestPathsCustom.run(graph, sourceId, costFunction)
         val verticesRDD = spResult.vertices

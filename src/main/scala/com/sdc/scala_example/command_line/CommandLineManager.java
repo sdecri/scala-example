@@ -197,7 +197,31 @@ public class CommandLineManager {
             spSourceLat = ParameterParser.parse(PARAMETER.SP_SOURCE_LAT, spSourceLatValue, (input) -> Double.parseDouble(input));
         }
         
-        appContext.setSpSource(GeometryUtils.GEOMETRY_FACTORY.createPoint(new Coordinate(spSourceLon, spSourceLat)));
+        if(spSourceLon != null && spSourceLat != null)
+            appContext.setSpSource(GeometryUtils.GEOMETRY_FACTORY.createPoint(new Coordinate(spSourceLon, spSourceLat)));
+        
+        Integer spNearestDistance = ParameterDefault.DEFAULT_SP_NEAREST_DISTANCE;
+        if (cli.hasOption(PARAMETER.SP_NEAREST_DISTANCE.getLongOpt())) {
+            String spNearestDistanceValue = cli.getOptionValue(PARAMETER.SP_NEAREST_DISTANCE.getLongOpt());
+            spNearestDistance = ParameterParser.parse(PARAMETER.SP_NEAREST_DISTANCE, spNearestDistanceValue, (input) -> Integer.parseInt(input));
+        }
+        appContext.setSpNearestDistance(spNearestDistance);
+
+        Integer spNearestAttempts = ParameterDefault.DEFAULT_SP_NEAREST_ATTEMPS;
+        if (cli.hasOption(PARAMETER.SP_NEAREST_ATTEMPS.getLongOpt())) {
+            String spNearestAttemptsValue = cli.getOptionValue(PARAMETER.SP_NEAREST_ATTEMPS.getLongOpt());
+            spNearestAttempts = ParameterParser.parse(PARAMETER.SP_NEAREST_ATTEMPS, spNearestAttemptsValue, (input) -> Integer.parseInt(input));
+        }
+        appContext.setSpNearestAttempts(spNearestAttempts);
+        
+        Integer spNearestFactor = ParameterDefault.DEFAULT_SP_NEAREST_FACTOR;
+        if (cli.hasOption(PARAMETER.SP_NEAREST_FACTOR.getLongOpt())) {
+            String spNearestFactorValue = cli.getOptionValue(PARAMETER.SP_NEAREST_FACTOR.getLongOpt());
+            spNearestFactor = ParameterParser.parse(PARAMETER.SP_NEAREST_FACTOR, spNearestFactorValue, (input) -> Integer.parseInt(input));
+        }
+        appContext.setSpNearestFactor(spNearestFactor);      
+        
+        
         
         return appContext;
     }

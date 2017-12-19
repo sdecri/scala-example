@@ -58,12 +58,12 @@ object OsmParquetConverter {
 
     }
 
-    private def convertNodes(sparkSession : org.apache.spark.sql.SparkSession, context :Context) : DataFrame = {
+    private def convertNodes(sparkSession : SparkSession, context :Context) : DataFrame = {
         val nodesOsmDF = sparkSession.read.parquet(context.nodesFile.getAbsolutePath)
         nodesOsmDF.select("id", "latitude", "longitude")
     }
 
-    private def convertLinks(sparkSession : org.apache.spark.sql.SparkSession, nodeDF : DataFrame, context :Context) = {
+    private def convertLinks(sparkSession : SparkSession, nodeDF : DataFrame, context :Context) = {
 
         val sqlContext = new SQLContext(sparkSession.sparkContext)
         import sqlContext.implicits._
@@ -91,7 +91,7 @@ object OsmParquetConverter {
             
         var nodeLinkJoinDF = nodeDF.join(wayNodesDF, $"indexedNode.nodeId" === nodeDF("id"))
         nodeLinkJoinDF.cache()
-        var nodesInLinksDF = nodeLinkJoinDF.select($"id", $"latitude", $"longitude")
+        var nodesInLinksDF = nodeLinkJoinDF.select($"id", $"latitude", $"longitude").dropDuplicates()
             
         val wayDF = nodeLinkJoinDF.groupBy($"wayId", $"tags")
         .agg(collect_list(struct($"indexedNode.index", $"indexedNode.nodeId", $"latitude", $"longitude")).as("nodes")

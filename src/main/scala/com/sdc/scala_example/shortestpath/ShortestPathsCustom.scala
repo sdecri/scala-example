@@ -9,6 +9,7 @@ import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.types.LongType
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.StructField
+import java.time.Duration
 
 /**
  * Computes shortest paths from one source vertex to all vertices, returning a graph where each
@@ -54,6 +55,8 @@ object ShortestPathsCustom extends Serializable {
         
         LOG.info("Run shortest path algorithm with cost function = %s".format(costFunctionType))
         
+        val start = System.nanoTime()
+        
         val spGraph = graph.mapVertices { (vid, vertex) =>
             if (vid == source) 
                 new VertexShortestPath(0, -1) 
@@ -87,6 +90,7 @@ object ShortestPathsCustom extends Serializable {
             val linkCost :Double = getLinkCost(triplet.attr)
             val newDestCost = triplet.srcAttr.getMinCost() + linkCost
             if(newDestCost < triplet.dstAttr.getMinCost()){
+                LOG.debug("Send message through triplet: %s".format(triplet))
                 return Iterator((triplet.dstId, new ShortestPathMessage(newDestCost, triplet.attr.getId())))
             }
             else
@@ -99,8 +103,11 @@ object ShortestPathsCustom extends Serializable {
             else
                 msg2
 
-        Pregel(spGraph, initialMessage, activeDirection = EdgeDirection.Out)(vertexProgram, sendMessage, mergeMessage)
+        val pregel = Pregel(spGraph, initialMessage, activeDirection = EdgeDirection.Out)(vertexProgram, sendMessage, mergeMessage)
 
+        val elapsed = System.nanoTime() - start
+        LOG.info("Shortest path elapsed time: %s".format(Duration.ofNanos(elapsed)))
         
+        pregel
     }
 }

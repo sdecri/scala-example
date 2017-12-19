@@ -13,7 +13,6 @@ import org.hamcrest.Matchers._
 import org.junit.Assert._
 import com.sdc.scala_example.shortestpath.VertexShortestPath
 import scala.collection.Map
-import com.sdc.scala_example.shortestpath.VertexShortestPath
 
 
 @Test

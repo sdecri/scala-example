@@ -46,9 +46,10 @@ class TestOsmConverterProcess extends TestWithSparkSession {
         assertTrue(expectedNodesFile.exists())
         assertTrue(expectedNodesFile.isDirectory())
 
-        val nodeDF = getSpark().read.parquet(expectedNodesFile.getAbsolutePath)
-        nodeDF.show()
-        assertTrue(nodeDF.count() > 0)
+        val nodesDF = getSpark().read.parquet(expectedNodesFile.getAbsolutePath).orderBy("id")
+        nodesDF.cache()
+        nodesDF.show()
+        assertTrue(nodesDF.count() > 0)
 
         val expectedLinksFile = new File(outputDir + "links")
         assertTrue(expectedLinksFile.exists())

@@ -37,8 +37,12 @@ class TestShortestPathProcess extends TestWithSparkSession {
         val fileUrlLinks = this.getClass().getResource(fileResourceLinks);
         
 
-        val args = "--spark-master local --run-type %s --nodes-file %s --links-file %s --sp-cost-function %s --output-dir %s"
+        val args = ("--spark-master local --run-type %s --nodes-file %s --links-file %s" + 
+        " --sp-source-lon %f --sp-source-lat %f " + 
+        " --sp-nearest-distance %d --sp-cost-function %s --output-dir %s")
             .format(RUN_TYPE.SHORTEST_PATH.getValue, fileUrlNodes.getFile, fileUrlLinks.getFile
+                    , 12.53685, 41.89721
+                    , 100
                     , ShortestPathsCustom.COST_FUNCTION.DISTANCE.toString()
                     , outputDir)
 
@@ -56,18 +60,26 @@ class TestShortestPathProcess extends TestWithSparkSession {
         
         assertTrue(verticesDF.count() > 0)
         
-        val vertexVisitedDF = verticesDF.select("*").where($"minCost" < ShortestPathsCustom.INITIAL_COST)
+        val vertexVisitedDF = verticesDF.select("*").where($"minCost" < ShortestPathsCustom.INITIAL_COST && $"predecessor" != -1)
         vertexVisitedDF.cache
         
         vertexVisitedDF.show()
         
-        var visitedVertexCount = vertexVisitedDF.count()
+        val visitedVertexCount = vertexVisitedDF.count()
         assertTrue(visitedVertexCount > 0)
         
         LOG.info("Number of visited nodes: %d".format(visitedVertexCount))
         
-        var sourceCount = verticesDF.select("*").where($"predecessor" === -1 && $"minCost" === 0.0).count()
-        assertThat(sourceCount, is(equalTo(1l)))
+        val sourceList = verticesDF.select("*").where($"predecessor" === -1 && $"minCost" === 0.0).collect()
+        
+        assertThat(sourceList.length, is(equalTo(1)))
+        
+        val source = sourceList(0)
+        val expectedSourceId = 296057855l
+        assertThat(source.getLong(0), is(equalTo(expectedSourceId)))
+        
+        
+        
     }
     
 }

@@ -23,7 +23,11 @@ public enum PARAMETER {
     ,LINKS_REPARTITION_OUTPUT ("links-repartition-output","Repartition of the converted (from link) links.", true, Integer.class, false)
     ,SP_COST_FUNCTION ("sp-cost-function","Repartition of the converted (from link) links.", true, String.class, false)    
     ,SP_SOURCE_LON ("sp-source-lon","Longitude in wgs84 of the shortest path source point", true, Integer.class, false)
-    ,SP_SOURCE_LAT ("sp-source-lon","Latitude in wgs84 of the shortest path source point", true, Integer.class, false)    
+    ,SP_SOURCE_LAT ("sp-source-lat","Latitude in wgs84 of the shortest path source point", true, Integer.class, false)    
+    ,SP_NEAREST_DISTANCE ("sp-nearest-distance","The first distance in meters to consider searching for the nearest node to the source point", true, Integer.class, false)
+    ,SP_NEAREST_ATTEMPS ("sp-nearest-attemps","The number of attemps to search for the nearest node to the source point."
+            + " In each attemp the first search distance is enlarged by the extension factor parameter", true, Integer.class, false)
+    ,SP_NEAREST_FACTOR ("sp-nearest-factor","Extension factor used to enlarge the distance in which to search the nearest node", true, Integer.class, false)    
     ,OUTOUT_DIR ( "output-dir","Output directory file path.", true, String.class, true)
     ;
     

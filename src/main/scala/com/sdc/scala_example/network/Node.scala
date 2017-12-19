@@ -37,7 +37,7 @@ class Node extends Serializable {
     def getLat(): Double = lat
     def setLat(lat: Double) = this.lat = lat
 
-    def toRow(): Row = Row(id.toString(), lat, lon)
+    def toRow(): Row = Row(id, lat, lon)
     
     override def hashCode(): Int = id.toInt
 

@@ -19,7 +19,7 @@ case class Link(id: Long, tail: Long, head: Long, length: Float, speed: Float) e
      */
     def getTravelTime(): Float = length / (speed)
 
-    def toRow(): Row = Row(id.toString(), tail.toString(), head.toString(), length, speed)
+    def toRow(): Row = Row(id, tail, head, length, speed)
 
     def getId(): Long = this.id
     def getTail(): Long = this.tail

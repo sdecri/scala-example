@@ -1,5 +1,5 @@
 /**
- * AppContext.java
+ * AppContext.javaDistance
  */
 package com.sdc.scala_example.command_line;
 
@@ -40,11 +40,67 @@ public class AppContext {
     private String outputDir;
     private String costFunction;
     private Point spSource;
-
+    private Integer spNearestDistance;
+    private Integer spNearestAttempts;
+    private Integer spNearestFactor;
     
 
 
     
+    
+    /**
+     * @return the {@link AppContext#spNearestDistance}
+     */
+    public Integer getSpNearestDistance() {
+    
+        return spNearestDistance;
+    }
+
+    
+    /**
+     * @param spNearestDistance the {@link AppContext#spNearestDistance} to set
+     */
+    public void setSpNearestDistance(Integer spNearestDistance) {
+    
+        this.spNearestDistance = spNearestDistance;
+    }
+
+    
+    /**
+     * @return the {@link AppContext#spNearestAttempts}
+     */
+    public Integer getSpNearestAttempts() {
+    
+        return spNearestAttempts;
+    }
+
+    
+    /**
+     * @param spNearestAttempts the {@link AppContext#spNearestAttempts} to set
+     */
+    public void setSpNearestAttempts(Integer spNearestAttempts) {
+    
+        this.spNearestAttempts = spNearestAttempts;
+    }
+
+    
+    /**
+     * @return the {@link AppContext#spNearestFactor}
+     */
+    public Integer getSpNearestFactor() {
+    
+        return spNearestFactor;
+    }
+
+    
+    /**
+     * @param spNearestFactor the {@link AppContext#spNearestFactor} to set
+     */
+    public void setSpNearestFactor(Integer spNearestFactor) {
+    
+        this.spNearestFactor = spNearestFactor;
+    }
+
     /**
      * @return the {@link AppContext#spSource}
      */

@@ -32,6 +32,8 @@ class TestImportGraphParquet extends TestWithSparkSession {
         assertTrue(graph.edges.count() > 0)
         println(graph.edges.collect().take(10).mkString(System.lineSeparator()))
         
+        network.nodesDF.orderBy("id").show(20)
+        
     }
     
 }
