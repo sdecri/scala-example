@@ -8,6 +8,7 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.Dataset
 import org.slf4j.LoggerFactory
 import scala.collection.immutable.List
+import org.apache.spark.sql.functions._
 
 object GeoFunctions {
 
@@ -25,9 +26,7 @@ object GeoFunctions {
     def getNearestNode(sourcePoint : Point, nodesDF :Dataset[Row], session :SparkSession
             , firstDistance :Int = 1000, nAttempt :Int = 3, extensionFactor :Int = 10) : Option[Node] = {
 
-        val sqlContext = new SQLContext(session.sparkContext)
-        import sqlContext.implicits._
-        import org.apache.spark.sql.functions._
+        import session.sqlContext.implicits._
 
         /**
          * A user defined function to compute the distance between the source point and each node in the dataset

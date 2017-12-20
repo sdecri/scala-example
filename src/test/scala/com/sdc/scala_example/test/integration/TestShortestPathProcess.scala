@@ -20,8 +20,8 @@ class TestShortestPathProcess extends TestWithSparkSession {
     @Test
     def testProcess() = {
         
-        val sqlContext = new SQLContext(getSpark().sparkContext)
-        import sqlContext.implicits._
+        val session = getSpark()
+        import session.sqlContext.implicits._
 
         // clean output directory
         val outputDir : String = "target/test/integration/shortest_path_process/testProcess/"

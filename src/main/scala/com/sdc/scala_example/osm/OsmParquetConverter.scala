@@ -65,8 +65,7 @@ object OsmParquetConverter {
 
     private def convertLinks(sparkSession : SparkSession, nodeDF : DataFrame, context :Context) = {
 
-        val sqlContext = new SQLContext(sparkSession.sparkContext)
-        import sqlContext.implicits._
+        import sparkSession.sqlContext.implicits._
 
         val waysDF : Dataset[Row] = sparkSession.read.parquet(context.waysFile.getAbsolutePath)
 
