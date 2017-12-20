@@ -37,6 +37,44 @@ public class AppContext {
     private String linksFilePath;
     private Integer nodesRepartitionOutput;
     private Integer linksRepartitionOutput;
+    private Boolean osmConverterPersistNodes;
+    private Boolean osmConverterPersistLinks;
+    
+    /**
+     * @return the {@link AppContext#osmConverterPersistNodes}
+     */
+    public Boolean getOsmConverterPersistNodes() {
+    
+        return osmConverterPersistNodes;
+    }
+
+    
+    /**
+     * @param osmConverterPersistNodes the {@link AppContext#osmConverterPersistNodes} to set
+     */
+    public void setOsmConverterPersistNodes(Boolean osmConverterPersistNodes) {
+    
+        this.osmConverterPersistNodes = osmConverterPersistNodes;
+    }
+
+    
+    /**
+     * @return the {@link AppContext#osmConverterPersistLinks}
+     */
+    public Boolean getOsmConverterPersistLinks() {
+    
+        return osmConverterPersistLinks;
+    }
+
+    
+    /**
+     * @param osmConverterPersistLinks the {@link AppContext#osmConverterPersistLinks} to set
+     */
+    public void setOsmConverterPersistLinks(Boolean osmConverterPersistLinks) {
+    
+        this.osmConverterPersistLinks = osmConverterPersistLinks;
+    }
+
     private String outputDir;
     private String costFunction;
     private Point spSource;

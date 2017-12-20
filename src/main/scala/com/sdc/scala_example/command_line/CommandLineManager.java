@@ -171,20 +171,34 @@ public class CommandLineManager {
         appContext.setCostFunction(cli.getOptionValue(PARAMETER.SP_COST_FUNCTION.getLongOpt(), ParameterDefault.DEFAULT_SP_COST_FUNCTION));
 
         
-        Integer nodesRepartitionOutput = ParameterDefault.DEFAULT_NODES_REPARTITION_OUTPUT;
-        if (cli.hasOption(PARAMETER.NODES_REPARTITION_OUTPUT.getLongOpt())) {
-            String nodesRepartitionOutputValue = cli.getOptionValue(PARAMETER.NODES_REPARTITION_OUTPUT.getLongOpt());
-            nodesRepartitionOutput = ParameterParser.parse(PARAMETER.NODES_REPARTITION_OUTPUT, nodesRepartitionOutputValue, (input) -> Integer.parseInt(input));
+        Integer nodesRepartitionOutput = ParameterDefault.DEFAULT_OSM_CONVERTER_NODES_REPARTITION_OUTPUT;
+        if (cli.hasOption(PARAMETER.OSM_CONVERTER_NODES_REPARTITION_OUTPUT.getLongOpt())) {
+            String nodesRepartitionOutputValue = cli.getOptionValue(PARAMETER.OSM_CONVERTER_NODES_REPARTITION_OUTPUT.getLongOpt());
+            nodesRepartitionOutput = ParameterParser.parse(PARAMETER.OSM_CONVERTER_NODES_REPARTITION_OUTPUT, nodesRepartitionOutputValue, (input) -> Integer.parseInt(input));
         }
         appContext.setNodesRepartitionOutput(nodesRepartitionOutput);
 
-        Integer linksRepartitionOutput = ParameterDefault.DEFAULT_LINKS_REPARTITION_OUTPUT;
-        if (cli.hasOption(PARAMETER.LINKS_REPARTITION_OUTPUT.getLongOpt())) {
-            String linksRepartitionOutputValue = cli.getOptionValue(PARAMETER.LINKS_REPARTITION_OUTPUT.getLongOpt());
-            linksRepartitionOutput = ParameterParser.parse(PARAMETER.LINKS_REPARTITION_OUTPUT, linksRepartitionOutputValue, (input) -> Integer.parseInt(input));
+        Integer linksRepartitionOutput = ParameterDefault.DEFAULT_OSM_CONVERTER_LINKS_REPARTITION_OUTPUT;
+        if (cli.hasOption(PARAMETER.OSM_CONVERTER_LINKS_REPARTITION_OUTPUT.getLongOpt())) {
+            String linksRepartitionOutputValue = cli.getOptionValue(PARAMETER.OSM_CONVERTER_LINKS_REPARTITION_OUTPUT.getLongOpt());
+            linksRepartitionOutput = ParameterParser.parse(PARAMETER.OSM_CONVERTER_LINKS_REPARTITION_OUTPUT, linksRepartitionOutputValue, (input) -> Integer.parseInt(input));
         }
         appContext.setLinksRepartitionOutput(linksRepartitionOutput);
 
+        Boolean osmConverterPersistNodes = ParameterDefault.DEFAULT_OSM_CONVERTER_PERSIST_NODES;
+        if (cli.hasOption(PARAMETER.OSM_CONVERTER_PERSIST_NODES.getLongOpt())) {
+            String osmConverterPersistNodesValue = cli.getOptionValue(PARAMETER.OSM_CONVERTER_PERSIST_NODES.getLongOpt());
+            osmConverterPersistNodes = ParameterParser.parse(PARAMETER.OSM_CONVERTER_PERSIST_NODES, osmConverterPersistNodesValue, (input) -> Boolean.parseBoolean(input));
+        }
+        appContext.setOsmConverterPersistNodes(osmConverterPersistNodes);
+        
+        Boolean osmConverterPersistLinks = ParameterDefault.DEFAULT_OSM_CONVERTER_PERSIST_LINKS;
+        if (cli.hasOption(PARAMETER.OSM_CONVERTER_PERSIST_LINKS.getLongOpt())) {
+            String osmConverterPersistLinksValue = cli.getOptionValue(PARAMETER.OSM_CONVERTER_PERSIST_LINKS.getLongOpt());
+            osmConverterPersistLinks = ParameterParser.parse(PARAMETER.OSM_CONVERTER_PERSIST_LINKS, osmConverterPersistLinksValue, (input) -> Boolean.parseBoolean(input));
+        }
+        appContext.setOsmConverterPersistLinks(osmConverterPersistLinks);     
+        
         Double spSourceLon = null;
         if (cli.hasOption(PARAMETER.SP_SOURCE_LON.getLongOpt())) {
             String spSourceLonValue = cli.getOptionValue(PARAMETER.SP_SOURCE_LON.getLongOpt());

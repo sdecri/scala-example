@@ -6,9 +6,9 @@ import org.apache.spark.sql.SQLImplicits
 import org.apache.spark.sql.functions._
 import com.sdc.scala_example.network.Link
 import scala.collection.mutable.WrappedArray
-import java.util.Map
 import com.sdc.scala_example.geometry.GeometryUtils
 import org.slf4j.LoggerFactory
+import com.sdc.scala_example.command_line.AppContext
 
 /**
  * Class that import osm parquet produced with osm-parquetizer
@@ -21,15 +21,9 @@ object OsmParquetConverter {
     
     private val LOG = LoggerFactory.getLogger(getClass)
     
-    case class Context(nodesFile : String, waysFile : String, outputDir : String
-            , nodesRepartition :Int = -1, linksRepartition :Int = -1){
-        
-        override def toString() :String = "NODES = %s, WAYS = %s, OUTPUT_DIR = %s, NODES_REPARTITION = %d, LINKS_REPARTITOIN = %d"
-        .format(nodesFile,waysFile,outputDir,nodesRepartition,linksRepartition)
-    }
-    
 
-    def convertToNetwork[VD](sparkSession : SparkSession, context :Context) : Unit = {
+
+    def convertToNetwork[VD](sparkSession : SparkSession, context :AppContext) : Unit = {
 
         LOG.info("Convert OSM parquet to internal network parquet with context: %s".format(context))
         
@@ -40,34 +34,39 @@ object OsmParquetConverter {
         
         var net = convertLinks(sparkSession, allNodeDF, context)
         
-        val nodesParquetFilePath = context.outputDir + "nodes"
+        val nodesParquetFilePath = context.getOutputDir + "nodes"
         var nodeDF = net._1
-        if(context.nodesRepartition > 0)
-            nodeDF = nodeDF.repartition(context.nodesRepartition)
-        nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)
+        if(context.getOsmConverterPersistNodes){
+            if (context.getNodesRepartitionOutput > 0)
+                nodeDF = nodeDF.repartition(context.getNodesRepartitionOutput)
+            nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)   
+        }
         
         LOG.info("Number of network nodes: %d".format(nodeDF.count()))
         
-        val linksParquetFilePath = context.outputDir + "links"
+        val linksParquetFilePath = context.getOutputDir + "links"
         var linkDS = net._2
         linkDS.cache()
-        if(context.linksRepartition > 0)
-            linkDS = linkDS.repartition(context.linksRepartition)
-        linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
+        if(context.getOsmConverterPersistLinks) {
+            if (context.getLinksRepartitionOutput > 0)
+                linkDS = linkDS.repartition(context.getLinksRepartitionOutput)
+            linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
+        }
+        
         LOG.info("Number of network links: %d".format(linkDS.count()))
 
     }
 
-    private def convertNodes(sparkSession : SparkSession, context :Context) : DataFrame = {
-        val nodesOsmDF = sparkSession.read.parquet(context.nodesFile)
+    private def convertNodes(sparkSession : SparkSession, context :AppContext) : DataFrame = {
+        val nodesOsmDF = sparkSession.read.parquet(context.getOsmNodesFilePath)
         nodesOsmDF.select("id", "latitude", "longitude")
     }
 
-    private def convertLinks(sparkSession : SparkSession, nodeDF : DataFrame, context :Context) = {
+    private def convertLinks(sparkSession : SparkSession, nodeDF : DataFrame, context :AppContext) = {
 
         import sparkSession.sqlContext.implicits._
 
-        val waysDF : Dataset[Row] = sparkSession.read.parquet(context.waysFile)
+        val waysDF : Dataset[Row] = sparkSession.read.parquet(context.getOsmWaysFilePath)
 
         waysDF.cache()
         LOG.info("Number of all imported ways: %d".format(waysDF.count()))
@@ -98,42 +97,49 @@ object OsmParquetConverter {
                             
         var linkDS = wayDF.flatMap((row : Row) => {
 
-            var tags = row.getAs[WrappedArray[Row]](1)
-
-            val tagsMap = tags
-                .map(r => new String(r.getAs[Array[Byte]]("key")) -> new String(r.getAs[Array[Byte]]("value"))).toMap
-
-            var speed = defaultSpeed
-            val speedOption = tagsMap.get(speedTag)
-            if (!speedOption.isEmpty) speed = speedOption.get.toInt
-            
-            val isOneWay = tagsMap.getOrElse(oneWayTag, "no") == "yes"
-            val isRoundAbout = tagsMap.getOrElse(roundAboutTag, "default") == roundAboutValue
-            
-            speed = speed / 3.6
-
-            var nodes = row.getAs[WrappedArray[Row]](2)
-            .map(r => (r.getInt(0), r.getAs[Long](1), r.getAs[Double](2), r.getAs[Double](3))).array
-            .sortBy(x => x._1)
-            
-            var linkIds = row.getAs[WrappedArray[Long]](3).toArray
             var links : List[Link] = List.empty[Link]
+            var tagsMap = Map.empty[String, String]
+            try {
+                                
+                var tags = row.getAs[WrappedArray[Row]](1)
 
-            for (i <- 0 until nodes.length - 1) {
-                var tail = nodes(i)
-                var head = nodes(i + 1)
+                tagsMap = tags
+                    .map(r => new String(r.getAs[Array[Byte]]("key")) -> new String(r.getAs[Array[Byte]]("value"))).toMap
 
-                links = links :+ createLink(tail, head, linkIds(i), speed)
-                
-                if(!isOneWay && !isRoundAbout){
-                    tail = nodes(i + 1)
-                    head = nodes(i)
-                    links = links :+ createLink(tail, head, linkIds(i) + totalBidirectionalLinks, speed)    
+                var speed = defaultSpeed
+                val speedOption = tagsMap.get(speedTag)
+                if (!speedOption.isEmpty) speed = speedOption.get.toInt
+
+                val isOneWay = tagsMap.getOrElse(oneWayTag, "no") == "yes"
+                val isRoundAbout = tagsMap.getOrElse(roundAboutTag, "default") == roundAboutValue
+
+                speed = speed / 3.6
+
+                var nodes = row.getAs[WrappedArray[Row]](2)
+                    .map(r => (r.getInt(0), r.getAs[Long](1), r.getAs[Double](2), r.getAs[Double](3))).array
+                    .sortBy(x => x._1)
+
+                var linkIds = row.getAs[WrappedArray[Long]](3).toArray
+
+                for (i <- 0 until nodes.length - 1) {
+                    var tail = nodes(i)
+                    var head = nodes(i + 1)
+
+                    links = links :+ createLink(tail, head, linkIds(i), speed)
+
+                    if (!isOneWay && !isRoundAbout) {
+                        tail = nodes(i + 1)
+                        head = nodes(i)
+                        links = links :+ createLink(tail, head, linkIds(i) + totalBidirectionalLinks, speed)
+                    }
+
                 }
-                
-                
-            }
 
+            } catch {
+                case e : Exception => {
+                    LOG.error("Error processing way %d. Tags: %s".format(row.getLong(0), tagsMap.mkString(" | ")), e)
+                }
+            }
             links
         })
 

@@ -20,8 +20,14 @@ public enum PARAMETER {
     ,OSM_WAYS_FILE ( "osm-ways-file","Parquet osm ways file path.", true, String.class, false)
     ,NODES_FILE ( "nodes-file","Parquet internal network format nodes file path.", true, String.class, false)
     ,LINKS_FILE ( "links-file","Parquet internal network format links file path.", true, String.class, false)
-    ,NODES_REPARTITION_OUTPUT ("nodes-repartition-output","Repartition of the converted (from osm) nodes.", true, Integer.class, false)
-    ,LINKS_REPARTITION_OUTPUT ("links-repartition-output","Repartition of the converted (from link) links.", true, Integer.class, false)
+    ,OSM_CONVERTER_NODES_REPARTITION_OUTPUT ("osmc-nodes-repartition-output","Repartition of the converted (from osm) nodes.", true, Integer.class, false)
+    ,OSM_CONVERTER_LINKS_REPARTITION_OUTPUT ("osmc-links-repartition-output","Repartition of the converted (from link) links.", true, Integer.class, false)
+    ,OSM_CONVERTER_PERSIST_NODES ("osmc-persist-nodes"
+            , String.format("If true perssist the converted nodes. Default = %s",ParameterDefault.DEFAULT_OSM_CONVERTER_PERSIST_NODES)
+            , true, Boolean.class, false)
+    ,OSM_CONVERTER_PERSIST_LINKS ("osmc-persist-links"
+            , String.format("If true perssist the converted links. Default = %s",ParameterDefault.DEFAULT_OSM_CONVERTER_PERSIST_LINKS)
+            , true, Boolean.class, false)    
     ,SP_COST_FUNCTION ("sp-cost-function","Repartition of the converted (from link) links.", true, String.class, false)    
     ,SP_SOURCE_LON ("sp-source-lon","Longitude in wgs84 of the shortest path source point", true, Integer.class, false)
     ,SP_SOURCE_LAT ("sp-source-lat","Latitude in wgs84 of the shortest path source point", true, Integer.class, false)    

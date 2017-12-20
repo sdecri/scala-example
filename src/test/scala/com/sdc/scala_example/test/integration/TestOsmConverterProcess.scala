@@ -9,6 +9,7 @@ import org.hamcrest.Matchers._
 import org.junit.Assert._
 import com.sdc.scala_example.command_line.RUN_TYPE
 import org.apache.spark.sql.SQLContext
+import scala.collection.Map
 
 @Test
 class TestOsmConverterProcess extends TestWithSparkSession {
@@ -18,7 +19,8 @@ class TestOsmConverterProcess extends TestWithSparkSession {
 
         val session = getSpark()
         import session.sqlContext.implicits._
-
+        
+        
         
         // clean output directory
         val outputDir : String = "target/test/integration/osm_converter/testProcess/"
@@ -34,7 +36,9 @@ class TestOsmConverterProcess extends TestWithSparkSession {
 
         val linksRepartition = 3
 
-        val args = "--spark-master local --run-type %s --osm-nodes-file %s --osm-ways-file %s --links-repartition-output %d --output-dir %s"
+        val args = ("--spark-master local --run-type %s --osm-nodes-file %s --osm-ways-file %s" + 
+            " --osmc-links-repartition-output %d --output-dir %s" +
+            " --osmc-persist-links true")
             .format(RUN_TYPE.OSM_CONVERTER.getValue, fileUrlNodes, fileUrlWays, linksRepartition, outputDir)
 
         App.main(args.split(" "))

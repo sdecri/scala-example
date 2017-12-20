@@ -182,6 +182,7 @@
                 <configuration>
                     <useFile>false</useFile>
                     <disableXmlReport>true</disableXmlReport>
+                    <trimStackTrace>false</trimStackTrace>
                 </configuration>
             </plugin>
         </plugins>

@@ -61,10 +61,7 @@ object App {
 
                 if (appContext.getRunType == RUN_TYPE.OSM_CONVERTER) {
 
-                    val context = OsmParquetConverter.Context(appContext.getOsmNodesFilePath
-                    , appContext.getOsmWaysFilePath, appContext.getOutputDir
-                    , appContext.getNodesRepartitionOutput, appContext.getLinksRepartitionOutput)
-                    OsmParquetConverter.convertToNetwork(session, context)
+                    OsmParquetConverter.convertToNetwork(session, appContext)
 
                 } else if (appContext.getRunType == RUN_TYPE.SHORTEST_PATH)
 
