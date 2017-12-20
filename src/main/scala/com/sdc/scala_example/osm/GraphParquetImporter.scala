@@ -15,7 +15,7 @@ object GraphParquetImporter {
 
     private val LOG = LoggerFactory.getLogger(getClass)
     
-    case class Context(nodesFile : File, linksFile : File){
+    case class Context(nodesFile : String, linksFile : String){
         
         override def toString() :String = "NODES_FILE = %s, LINKS_FILE = %s"
         .format(nodesFile,linksFile)
@@ -27,8 +27,8 @@ object GraphParquetImporter {
        
         LOG.info("Import internal formal network parquet with context: %s".format(context))
         
-        val nodesDF = sparkSession.read.parquet(context.nodesFile.getAbsolutePath)       
-        val linksDF = sparkSession.read.parquet(context.linksFile.getAbsolutePath)
+        val nodesDF = sparkSession.read.parquet(context.nodesFile)       
+        val linksDF = sparkSession.read.parquet(context.linksFile)
         
         val nodesRDD = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
         val edgesRDD = linksDF.rdd.map(row => {

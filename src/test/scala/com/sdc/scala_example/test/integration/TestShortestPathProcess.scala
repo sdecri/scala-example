@@ -40,7 +40,7 @@ class TestShortestPathProcess extends TestWithSparkSession {
         val args = ("--spark-master local --run-type %s --nodes-file %s --links-file %s" + 
         " --sp-source-lon %f --sp-source-lat %f " + 
         " --sp-nearest-distance %d --sp-cost-function %s --output-dir %s")
-            .format(RUN_TYPE.SHORTEST_PATH.getValue, fileUrlNodes.getFile, fileUrlLinks.getFile
+            .format(RUN_TYPE.SHORTEST_PATH.getValue, fileUrlNodes, fileUrlLinks
                     , 12.53685, 41.89721
                     , 100
                     , ShortestPathsCustom.COST_FUNCTION.DISTANCE.toString()
@@ -55,7 +55,11 @@ class TestShortestPathProcess extends TestWithSparkSession {
         assertTrue(expectedVerticesFile.exists())
         assertTrue(expectedVerticesFile.isDirectory())
 
-        val verticesDF = getSpark().read.parquet(expectedVerticesFile.getAbsolutePath)
+        val verticesDF = getSpark().read
+        .option("header", "true")
+        .schema(ShortestPathsCustom.VERTEX_SHORTEST_PATH_SCHEMA)
+        .csv(expectedVerticesFile.getAbsolutePath)
+        
         verticesDF.cache
         
         assertTrue(verticesDF.count() > 0)

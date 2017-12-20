@@ -35,7 +35,7 @@ class TestOsmConverterProcess extends TestWithSparkSession {
         val linksRepartition = 3
 
         val args = "--spark-master local --run-type %s --osm-nodes-file %s --osm-ways-file %s --links-repartition-output %d --output-dir %s"
-            .format(RUN_TYPE.OSM_CONVERTER.getValue, fileUrlNodes.getFile, fileUrlWays.getFile, linksRepartition, outputDir)
+            .format(RUN_TYPE.OSM_CONVERTER.getValue, fileUrlNodes, fileUrlWays, linksRepartition, outputDir)
 
         App.main(args.split(" "))
         

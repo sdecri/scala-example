@@ -31,6 +31,7 @@ import com.vividsolutions.jts.geom.Point
 import org.apache.spark.sql.SQLContext
 import com.sdc.scala_example.network.GeoFunctions
 import com.sdc.scala_example.exception.NodeNotFoundException
+import org.apache.spark.sql.SaveMode
 
 /**
  * @author ${user.name}
@@ -60,8 +61,8 @@ object App {
 
                 if (appContext.getRunType == RUN_TYPE.OSM_CONVERTER) {
 
-                    val context = OsmParquetConverter.Context(new File(appContext.getOsmNodesFilePath)
-                    , new File(appContext.getOsmWaysFilePath), appContext.getOutputDir
+                    val context = OsmParquetConverter.Context(appContext.getOsmNodesFilePath
+                    , appContext.getOsmWaysFilePath, appContext.getOutputDir
                     , appContext.getNodesRepartitionOutput, appContext.getLinksRepartitionOutput)
                     OsmParquetConverter.convertToNetwork(session, context)
 
@@ -74,6 +75,7 @@ object App {
 
             } catch {
                 case e : Exception => LOG.error("General error running application", e)
+                throw e
             } finally {
                 if (session != null)
                     session.close()
@@ -86,7 +88,7 @@ object App {
 
     private def runShortestPath(appContext : AppContext, session : org.apache.spark.sql.SparkSession) = {
         
-        val context = GraphParquetImporter.Context(new File(appContext.getNodesFilePath), new File(appContext.getLinksFilePath))
+        val context = GraphParquetImporter.Context(appContext.getNodesFilePath, appContext.getLinksFilePath)
         val network = GraphParquetImporter.importToNetwork(session, context)
         val graph = network.graph
         graph.cache()
@@ -109,7 +111,9 @@ object App {
         })
         
         val verticesDF = session.createDataFrame(verteicesRowRDD, ShortestPathsCustom.VERTEX_SHORTEST_PATH_SCHEMA)
-        verticesDF.write.parquet(appContext.getOutputDir + SHORTEST_PATH_VERTICES_OUTPUT_FILE_NAME)
+        verticesDF.write.mode(SaveMode.Overwrite)
+        .option("header", "true")
+        .csv(appContext.getOutputDir + SHORTEST_PATH_VERTICES_OUTPUT_FILE_NAME)
     }
 
     private def initSpark(commandLineManager : CommandLineManager) : SparkSession = {

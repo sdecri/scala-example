@@ -14,14 +14,14 @@ class TestImportGraphParquet extends TestWithSparkSession {
         
         val fileResourceNodes = "/networks/internal/casal-bertone/nodes/";        
         val fileUrlNodes = getClass().getResource(fileResourceNodes);
-        val nodesFile = new File(fileUrlNodes.getFile());
+        val nodesFile = fileUrlNodes.getFile();
 
         
-        val fileResourceWays = "/networks/internal/casal-bertone/links/";        
-        val fileUrlWays = getClass().getResource(fileResourceWays);
-        val waysFile = new File(fileUrlWays.getFile());
+        val fileResourceLinks = "/networks/internal/casal-bertone/links/";        
+        val fileUrlLinks = getClass().getResource(fileResourceLinks);
+        val linksFile = fileUrlLinks.getFile();
         
-        val context = GraphParquetImporter.Context(nodesFile, waysFile)
+        val context = GraphParquetImporter.Context(nodesFile, linksFile)
         
         val network = GraphParquetImporter.importToNetwork(getSpark(), context)
         val graph = network.graph

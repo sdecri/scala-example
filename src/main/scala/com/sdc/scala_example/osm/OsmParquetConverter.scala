@@ -21,7 +21,7 @@ object OsmParquetConverter {
     
     private val LOG = LoggerFactory.getLogger(getClass)
     
-    case class Context(nodesFile : File, waysFile : File, outputDir : String
+    case class Context(nodesFile : String, waysFile : String, outputDir : String
             , nodesRepartition :Int = -1, linksRepartition :Int = -1){
         
         override def toString() :String = "NODES = %s, WAYS = %s, OUTPUT_DIR = %s, NODES_REPARTITION = %d, LINKS_REPARTITOIN = %d"
@@ -59,7 +59,7 @@ object OsmParquetConverter {
     }
 
     private def convertNodes(sparkSession : SparkSession, context :Context) : DataFrame = {
-        val nodesOsmDF = sparkSession.read.parquet(context.nodesFile.getAbsolutePath)
+        val nodesOsmDF = sparkSession.read.parquet(context.nodesFile)
         nodesOsmDF.select("id", "latitude", "longitude")
     }
 
@@ -67,7 +67,7 @@ object OsmParquetConverter {
 
         import sparkSession.sqlContext.implicits._
 
-        val waysDF : Dataset[Row] = sparkSession.read.parquet(context.waysFile.getAbsolutePath)
+        val waysDF : Dataset[Row] = sparkSession.read.parquet(context.waysFile)
 
         waysDF.cache()
         LOG.info("Number of all imported ways: %d".format(waysDF.count()))
