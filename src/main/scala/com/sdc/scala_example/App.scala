@@ -40,7 +40,7 @@ object App {
 
     val LOG = LoggerFactory.getLogger(classOf[App])
     val APP_NAME = "scala-graphx-example"
-    val SHORTEST_PATH_VERTICES_OUTPUT_FILE_NAME = "shortest-path-vertices.parquet"
+    val SHORTEST_PATH_VERTICES_OUTPUT_FILE_NAME = "shortest-path-vertices"
     
     
     def main(args : Array[String]) {
