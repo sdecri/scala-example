@@ -1,6 +1,4 @@
-package com.sdc.scala_example.shortestpath
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+package com.sdc.scala_example.shortestpath.single_source
 
 class VertexShortestPath extends Serializable {
 

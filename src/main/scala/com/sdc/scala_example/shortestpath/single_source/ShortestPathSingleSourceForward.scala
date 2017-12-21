@@ -1,6 +1,4 @@
-package com.sdc.scala_example.shortestpath
-
-import scala.reflect.ClassTag
+package com.sdc.scala_example.shortestpath.single_source
 
 import org.apache.spark.graphx._
 import com.sdc.scala_example.network.Link
@@ -18,7 +16,7 @@ import java.time.Duration
  * <li> shortest-path distance.
  * </ul>
  */
-object ShortestPathsCustom extends Serializable {
+object ShortestPathSingleSourceForward extends Serializable {
     
     private val LOG = LoggerFactory.getLogger(getClass)    
     

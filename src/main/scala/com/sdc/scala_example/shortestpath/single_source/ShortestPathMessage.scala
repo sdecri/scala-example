@@ -1,4 +1,4 @@
-package com.sdc.scala_example.shortestpath
+package com.sdc.scala_example.shortestpath.single_source
 
 class ShortestPathMessage extends Serializable{
     

@@ -8,17 +8,17 @@ import org.apache.spark.SparkConf
 import org.apache.spark.graphx.Edge
 import org.apache.spark.graphx.Graph
 import org.slf4j.LoggerFactory
-import com.sdc.scala_example.shortestpath.ShortestPathsCustom
+import com.sdc.scala_example.shortestpath.single_source.ShortestPathSingleSourceForward
 import org.hamcrest.Matchers._
 import org.junit.Assert._
-import com.sdc.scala_example.shortestpath.VertexShortestPath
 import scala.collection.Map
+import com.sdc.scala_example.shortestpath.single_source.VertexShortestPath
 
 
 @Test
-class TestShortestPathCustom extends TestWithSparkSession {
+class TestShortestPathSingleSourceForward extends TestWithSparkSession {
     
-    val LOG = LoggerFactory.getLogger(classOf[App])
+    val LOG = LoggerFactory.getLogger(classOf[TestShortestPathSingleSourceForward])
 
     
     def createLinks(nodes : List[com.sdc.scala_example.network.Node]) = List(
@@ -41,7 +41,7 @@ class TestShortestPathCustom extends TestWithSparkSession {
         new Node(6, 7.0, 1.0))
         
         
-    private def testSP(spType :ShortestPathsCustom.COST_FUNCTION.Value, expected :Map[Long, VertexShortestPath]) {
+    private def testSP(spType :ShortestPathSingleSourceForward.COST_FUNCTION.Value, expected :Map[Long, VertexShortestPath]) {
         
         var nodes = createNodes()
         var links = createLinks(nodes)
@@ -58,7 +58,7 @@ class TestShortestPathCustom extends TestWithSparkSession {
         LOG.info("####################################################")
         val source = 1l
         
-        var spDistance = ShortestPathsCustom.run(graphx, source, spType)
+        var spDistance = ShortestPathSingleSourceForward.run(graphx, source, spType)
         LOG.info("Shortest path custom (with arc cost function = %s)".format(spType))
         LOG.info("> Shortest path from %s result:".format(source))
         LOG.info(">> Vertices:")
@@ -78,7 +78,7 @@ class TestShortestPathCustom extends TestWithSparkSession {
         
     @Test
     def testSPDistance(){
-        testSP(ShortestPathsCustom.COST_FUNCTION.DISTANCE,
+        testSP(ShortestPathSingleSourceForward.COST_FUNCTION.DISTANCE,
             Map(1l -> new VertexShortestPath(0.0,-1)
             , 2l -> new VertexShortestPath(30.0,3l)
             , 3l -> new VertexShortestPath(20.0,1l)
@@ -93,7 +93,7 @@ class TestShortestPathCustom extends TestWithSparkSession {
     @Test
     def testSPTravelTime(){
         
-        testSP(ShortestPathsCustom.COST_FUNCTION.TRAVEL_TIME,
+        testSP(ShortestPathSingleSourceForward.COST_FUNCTION.TRAVEL_TIME,
             Map(1l -> new VertexShortestPath(0.0,-1)
             , 2l -> new VertexShortestPath(3.0,3l)
             , 3l -> new VertexShortestPath(2.0,1l)

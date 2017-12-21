@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 public enum RUN_TYPE {
 
     OSM_CONVERTER("osm-converter")
-    ,SHORTEST_PATH("shortest-path")
+    ,SHORTEST_PATH_SINGLE_SOURCE_FORWARD("shortest-path-single-source-fw")
+    ,SHORTEST_PATH_STANDARD("shortest-path-standard")
+    ,SHORTEST_PATH_CUSTOM_COST_FUCNTION("shortest-path-custom-cost-function")
     ;
     
     private String value;
