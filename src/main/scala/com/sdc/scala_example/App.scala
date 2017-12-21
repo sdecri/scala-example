@@ -74,8 +74,11 @@ object App {
                     
                     ShortestPathProcess.runShortestPathCustomCostFunction(appContext, session)
                     
-                }
-                
+                } else if (appContext.getRunType == RUN_TYPE.SHORTEST_PATH_RANDOM_GRAPH){
+                    
+                    ShortestPathProcess.runShortestPathRandomGraph(appContext, session)
+                    
+                }                
                 else
                     LOG.warn("No available run type specified: %s".format(appContext.getRunType))
 

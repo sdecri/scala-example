@@ -39,7 +39,26 @@ public class AppContext {
     private Integer linksRepartitionOutput;
     private Boolean osmConverterPersistNodes;
     private Boolean osmConverterPersistLinks;
+    private Integer spRandomGraphNumVertices;
     
+    
+    /**
+     * @return the {@link AppContext#spRandomGraphNumVertices}
+     */
+    public Integer getSpRandomGraphNumVertices() {
+    
+        return spRandomGraphNumVertices;
+    }
+
+    
+    /**
+     * @param spRandomGraphNumVertices the {@link AppContext#spRandomGraphNumVertices} to set
+     */
+    public void setSpRandomGraphNumVertices(Integer spRandomGraphNumVertices) {
+    
+        this.spRandomGraphNumVertices = spRandomGraphNumVertices;
+    }
+
     /**
      * @return the {@link AppContext#osmConverterPersistNodes}
      */

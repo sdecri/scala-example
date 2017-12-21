@@ -35,6 +35,7 @@ public enum PARAMETER {
     ,SP_NEAREST_ATTEMPS ("sp-nearest-attemps","The number of attemps to search for the nearest node to the source point."
             + " In each attemp the first search distance is enlarged by the extension factor parameter", true, Integer.class, false)
     ,SP_NEAREST_FACTOR ("sp-nearest-factor","Extension factor used to enlarge the distance in which to search the nearest node", true, Integer.class, false)    
+    ,SP_RANDOM_GRAPH_NUM_VERTICES ("sp-random-graph-num-vertices","Number of vertices for the log normal graph generation", true, Integer.class, false)
     ,OUTOUT_DIR ( "output-dir","Output directory file path.", true, String.class, false)
     ;
     

@@ -17,6 +17,7 @@ public enum RUN_TYPE {
     ,SHORTEST_PATH_SINGLE_SOURCE_FORWARD("shortest-path-single-source-fw")
     ,SHORTEST_PATH_STANDARD("shortest-path-standard")
     ,SHORTEST_PATH_CUSTOM_COST_FUCNTION("shortest-path-custom-cost-function")
+    ,SHORTEST_PATH_RANDOM_GRAPH("shortest-path-random-graph")
     ;
     
     private String value;

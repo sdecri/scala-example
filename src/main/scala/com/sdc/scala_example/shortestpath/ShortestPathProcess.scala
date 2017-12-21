@@ -23,6 +23,10 @@ import org.apache.spark.sql.types.StringType
 import com.sdc.scala_example.shortestpath.single_source.ShortestPathSingleSourceForward
 import com.sdc.scala_example.shortestpath.single_source.ShortestPathSingleSourceForward.COST_FUNCTION
 import com.sdc.scala_example.shortestpath.custom_function.ShortestPathCustomCostFunction
+import org.apache.spark.graphx.util.GraphGenerators
+import scala.util.Random
+import org.apache.spark.sql.types.DoubleType
+
 
 object ShortestPathProcess {
     
@@ -59,6 +63,28 @@ object ShortestPathProcess {
         
         Context(graph, sourceId, costFunction)        
         
+    }
+    
+    def runShortestPathRandomGraph(appContext : AppContext, session : SparkSession){
+        
+        val graph = GraphGenerators.logNormalGraph(session.sparkContext, appContext.getSpRandomGraphNumVertices)
+        graph.cache()
+        LOG.info("Graph number of vertices: %d".format(graph.vertices.count()))
+        LOG.info("Graph number of edges: %d".format(graph.edges.count()))
+        
+        val sourceId = Random.nextInt(appContext.getSpRandomGraphNumVertices + 1).toLong
+        LOG.info("source id = %d".format(sourceId))
+        val spResult = ShortestPaths.run(graph, Seq(sourceId))
+        val verticesRDD = spResult.vertices
+        val verteicesRowRDD = verticesRDD.map(map => {
+            Row.fromSeq(Seq(map._1, map._2.mkString(" | ")))
+        })
+                
+        
+        val verticesDF = session.createDataFrame(verteicesRowRDD, VERTEX_SHORTEST_PATH_STANDARD_SCHEMA)
+        verticesDF.write.mode(SaveMode.Overwrite)
+        .option("header", "true")
+        .csv(appContext.getOutputDir + App.SHORTEST_PATH_VERTICES_OUTPUT_FILE_NAME)        
     }
     
     def runShortestPathSingleSourceForward(appContext : AppContext, session : SparkSession) = {

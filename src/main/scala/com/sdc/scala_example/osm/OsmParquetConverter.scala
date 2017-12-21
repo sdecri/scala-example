@@ -67,7 +67,7 @@ object OsmParquetConverter {
         val waysDF : Dataset[Row] = sparkSession.read.parquet(context.getOsmWaysFilePath)
 
         waysDF.cache()
-        LOG.info("Number of all imported ways: %s".format(waysDF.count()))
+        LOG.info("Number of all imported ways: %d".format(waysDF.count()))
 
         val defaultSpeed = 50.0
         val speedTag = "maxspeed"

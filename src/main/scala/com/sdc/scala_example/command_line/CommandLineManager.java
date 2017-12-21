@@ -235,7 +235,12 @@ public class CommandLineManager {
         }
         appContext.setSpNearestFactor(spNearestFactor);      
         
-        
+        Integer spRandomGraphNumVertices = ParameterDefault.DEFAULT_SP_RANDOM_GRAPH_NUM_VERTICES;
+        if (cli.hasOption(PARAMETER.SP_RANDOM_GRAPH_NUM_VERTICES.getLongOpt())) {
+            String spRandomGraphNumVerticesValue = cli.getOptionValue(PARAMETER.SP_RANDOM_GRAPH_NUM_VERTICES.getLongOpt());
+            spRandomGraphNumVertices = ParameterParser.parse(PARAMETER.SP_RANDOM_GRAPH_NUM_VERTICES, spRandomGraphNumVerticesValue, (input) -> Integer.parseInt(input));
+        }
+        appContext.setSpRandomGraphNumVertices(spRandomGraphNumVertices);          
         
         return appContext;
     }
