@@ -21,7 +21,7 @@ class TestShortestPathProcess extends TestWithSparkSession {
 
     private val LOG = LoggerFactory.getLogger(getClass)
     
-    @Test
+    @Ignore
     def testShortestPathSingleSourceForward() = {
         
         val session = getSpark()
@@ -88,7 +88,7 @@ class TestShortestPathProcess extends TestWithSparkSession {
  
     }
         
-    @Test
+    @Ignore
     def testShortestPathStandard() = {
         
         val session = getSpark()
@@ -213,7 +213,7 @@ class TestShortestPathProcess extends TestWithSparkSession {
     }
     
     
-    @Test
+    @Ignore
     def testShortestPathRandomGraph() = {
         
         val session = getSpark()

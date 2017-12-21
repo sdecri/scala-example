@@ -13,12 +13,13 @@ import org.hamcrest.Matchers._
 import org.junit.Assert._
 import scala.collection.Map
 import com.sdc.scala_example.shortestpath.single_source.VertexShortestPath
+import org.apache.spark.graphx.lib.ShortestPaths
+import org.junit.Ignore
 
 
-@Test
-class TestShortestPathSingleSourceForward extends TestWithSparkSession {
+class TestShortestPath extends TestWithSparkSession {
     
-    val LOG = LoggerFactory.getLogger(classOf[TestShortestPathSingleSourceForward])
+    val LOG = LoggerFactory.getLogger(classOf[TestShortestPath])
 
     
     def createLinks(nodes : List[com.sdc.scala_example.network.Node]) = List(
@@ -71,12 +72,10 @@ class TestShortestPathSingleSourceForward extends TestWithSparkSession {
             assertThat(spVertices.get(k).get.getMinCost(), is(equalTo(v.getMinCost())))
             assertThat(spVertices.get(k).get.getPredecessorLink(), is(equalTo(v.getPredecessorLink())))
         }
-            
-
         
     }    
         
-    @Test
+    @Ignore
     def testSPDistance(){
         testSP(ShortestPathSingleSourceForward.COST_FUNCTION.DISTANCE,
             Map(1l -> new VertexShortestPath(0.0,-1)
@@ -90,7 +89,7 @@ class TestShortestPathSingleSourceForward extends TestWithSparkSession {
 
     }
     
-    @Test
+    @Ignore
     def testSPTravelTime(){
         
         testSP(ShortestPathSingleSourceForward.COST_FUNCTION.TRAVEL_TIME,
@@ -103,6 +102,30 @@ class TestShortestPathSingleSourceForward extends TestWithSparkSession {
             )
         )
 
+    }
+    
+    @Test
+    def testStandardSP(){
+        
+        
+        var nodes = createNodes()
+        var links = createLinks(nodes)
+
+        val nodesRdd = getSpark().sparkContext.parallelize(nodes)
+        val vertices = nodesRdd.map(n => (n.getId, n))
+        
+        val linksRdd = getSpark().sparkContext.parallelize(links)
+        val edges = linksRdd.map(l => Edge(l.getTail(), l.getHead(), l))
+        
+        val graphx = Graph(vertices, edges)
+
+        
+        val sp = ShortestPaths.run(graphx, Seq(6l))
+        
+         val spVertices = sp.vertices.collectAsMap()
+        println(spVertices.mkString(System.lineSeparator()))
+       
+        
     }
     
     
