@@ -40,8 +40,27 @@ public class AppContext {
     private Boolean osmConverterPersistNodes;
     private Boolean osmConverterPersistLinks;
     private Integer spRandomGraphNumVertices;
+    private Integer spGraphRepartition;
     
     
+    
+    /**
+     * @return the {@link AppContext#spGraphRepartition}
+     */
+    public Integer getSpGraphRepartition() {
+    
+        return spGraphRepartition;
+    }
+
+    
+    /**
+     * @param spGraphRepartition the {@link AppContext#spGraphRepartition} to set
+     */
+    public void setSpGraphRepartition(Integer spGraphRepartition) {
+    
+        this.spGraphRepartition = spGraphRepartition;
+    }
+
     /**
      * @return the {@link AppContext#spRandomGraphNumVertices}
      */

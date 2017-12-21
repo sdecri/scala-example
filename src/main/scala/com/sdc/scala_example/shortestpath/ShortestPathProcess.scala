@@ -45,8 +45,7 @@ object ShortestPathProcess {
     
     private def createContext(appContext : AppContext, session : SparkSession): Context = {
         
-        val graphImporterContext = GraphParquetImporter.Context(appContext.getNodesFilePath, appContext.getLinksFilePath)
-        val network = GraphParquetImporter.importToNetwork(session, graphImporterContext)
+        val network = GraphParquetImporter.importToNetwork(session, appContext)
         val graph = network.graph
         graph.cache()
         LOG.info("Graph number of vertices: %d".format(graph.vertices.count()))
@@ -68,6 +67,10 @@ object ShortestPathProcess {
     def runShortestPathRandomGraph(appContext : AppContext, session : SparkSession){
         
         val graph = GraphGenerators.logNormalGraph(session.sparkContext, appContext.getSpRandomGraphNumVertices)
+        if(appContext.getSpGraphRepartition > 0){
+            graph.vertices.repartition(appContext.getSpGraphRepartition)
+            graph.edges.repartition(appContext.getSpGraphRepartition)
+        }
         graph.cache()
         LOG.info("Graph number of vertices: %d".format(graph.vertices.count()))
         LOG.info("Graph number of edges: %d".format(graph.edges.count()))

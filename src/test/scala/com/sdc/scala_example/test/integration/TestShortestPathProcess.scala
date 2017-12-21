@@ -21,7 +21,7 @@ class TestShortestPathProcess extends TestWithSparkSession {
 
     private val LOG = LoggerFactory.getLogger(getClass)
     
-    @Ignore
+    @Test
     def testShortestPathSingleSourceForward() = {
         
         val session = getSpark()
@@ -88,7 +88,7 @@ class TestShortestPathProcess extends TestWithSparkSession {
  
     }
         
-    @Ignore
+    @Test
     def testShortestPathStandard() = {
         
         val session = getSpark()
@@ -170,11 +170,12 @@ class TestShortestPathProcess extends TestWithSparkSession {
         
 
         val args = ("--spark-master local --run-type %s --nodes-file %s --links-file %s" + 
-        " --sp-source-lon %f --sp-source-lat %f --sp-cost-function %s --output-dir %s")
+        " --sp-source-lon %f --sp-source-lat %f --sp-cost-function %s" + 
+        " --sp-graph-repartition %d --output-dir %s")
             .format(RUN_TYPE.SHORTEST_PATH_CUSTOM_COST_FUCNTION.getValue, fileUrlNodes, fileUrlLinks
                     , 12.53685, 41.89721
                     , ShortestPathSingleSourceForward.COST_FUNCTION.DISTANCE.toString()
-                    , outputDir)
+                    , -1, outputDir)
 
         App.main(args.split(" "))
         
@@ -213,7 +214,7 @@ class TestShortestPathProcess extends TestWithSparkSession {
     }
     
     
-    @Ignore
+    @Test
     def testShortestPathRandomGraph() = {
         
         val session = getSpark()

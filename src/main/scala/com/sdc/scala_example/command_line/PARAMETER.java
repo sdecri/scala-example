@@ -36,6 +36,8 @@ public enum PARAMETER {
             + " In each attemp the first search distance is enlarged by the extension factor parameter", true, Integer.class, false)
     ,SP_NEAREST_FACTOR ("sp-nearest-factor","Extension factor used to enlarge the distance in which to search the nearest node", true, Integer.class, false)    
     ,SP_RANDOM_GRAPH_NUM_VERTICES ("sp-random-graph-num-vertices","Number of vertices for the log normal graph generation", true, Integer.class, false)
+    ,SP_GRAPH_REPARTITION ("sp-graph-repartition", String.format("Number of partitions of the graph vertices and edges."
+            + " If < 1 skip the repartition. Default = %s", ParameterDefault.DEFAULT_SP_GRAPH_REPARTITION), true, Integer.class, false)    
     ,OUTOUT_DIR ( "output-dir","Output directory file path.", true, String.class, false)
     ;
     

@@ -37,7 +37,8 @@ import com.sdc.scala_example.shortestpath.ShortestPathProcess
  */
 object App {
 
-    val LOG = LoggerFactory.getLogger(classOf[App])
+    val LOG = LoggerFactory.getLogger(getClass)
+    
     val APP_NAME = "scala-graphx-example"
     val SHORTEST_PATH_VERTICES_OUTPUT_FILE_NAME = "shortest-path-vertices"
     

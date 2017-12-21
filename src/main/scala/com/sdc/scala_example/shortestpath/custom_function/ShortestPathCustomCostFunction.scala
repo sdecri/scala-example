@@ -4,8 +4,8 @@ import org.apache.spark.graphx.Graph
 import org.apache.spark.graphx.EdgeTriplet
 import org.apache.spark.graphx.Pregel
 import org.apache.spark.graphx._
-import parquet.org.slf4j.LoggerFactory
 import java.time.Duration
+import org.slf4j.LoggerFactory
 
 /**
  * Computes shortest paths to the given set of landmark vertices, returning a graph where each
@@ -52,11 +52,13 @@ object ShortestPathCustomCostFunction extends Serializable {
 
         def sendMessage(edge: EdgeTriplet[SPMap, Float]): Iterator[(VertexId, SPMap)] = {
             val newAttr = incrementMap(edge.dstAttr, edge.attr)
-            if (edge.srcAttr != addMaps(newAttr, edge.srcAttr)) Iterator((edge.srcId, newAttr))
-            else Iterator.empty
+            if (edge.srcAttr != addMaps(newAttr, edge.srcAttr)) 
+                Iterator((edge.srcId, newAttr))
+            else 
+                Iterator.empty
         }
 
-        val pregel = Pregel(spGraph, initialMessage)(vertexProgram, sendMessage, addMaps)
+        val pregel = Pregel(spGraph, initialMessage, activeDirection = EdgeDirection.In)(vertexProgram, sendMessage, addMaps)
 
         val elapsed = System.nanoTime() - start
         LOG.info("Shortest path elapsed time: %s".format(Duration.ofNanos(elapsed)))

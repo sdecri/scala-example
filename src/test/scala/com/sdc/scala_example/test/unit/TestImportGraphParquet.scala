@@ -5,6 +5,7 @@ import com.sdc.scala_example.osm.GraphParquetImporter
 import java.io.File
 import org.hamcrest.Matchers._
 import org.junit.Assert._
+import com.sdc.scala_example.command_line.AppContext
 
 @Test
 class TestImportGraphParquet extends TestWithSparkSession {
@@ -21,9 +22,12 @@ class TestImportGraphParquet extends TestWithSparkSession {
         val fileUrlLinks = getClass().getResource(fileResourceLinks);
         val linksFile = fileUrlLinks.getFile();
         
-        val context = GraphParquetImporter.Context(nodesFile, linksFile)
+        val appContext = new AppContext
+        appContext.setNodesFilePath(nodesFile)
+        appContext.setLinksFilePath(linksFile)
+        appContext.setSpGraphRepartition(-1)
         
-        val network = GraphParquetImporter.importToNetwork(getSpark(), context)
+        val network = GraphParquetImporter.importToNetwork(getSpark(), appContext)
         val graph = network.graph
         
         assertTrue(graph.vertices.count() > 0)

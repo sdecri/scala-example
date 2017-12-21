@@ -240,7 +240,14 @@ public class CommandLineManager {
             String spRandomGraphNumVerticesValue = cli.getOptionValue(PARAMETER.SP_RANDOM_GRAPH_NUM_VERTICES.getLongOpt());
             spRandomGraphNumVertices = ParameterParser.parse(PARAMETER.SP_RANDOM_GRAPH_NUM_VERTICES, spRandomGraphNumVerticesValue, (input) -> Integer.parseInt(input));
         }
-        appContext.setSpRandomGraphNumVertices(spRandomGraphNumVertices);          
+        appContext.setSpRandomGraphNumVertices(spRandomGraphNumVertices);         
+        
+        Integer spGraphRepartition = ParameterDefault.DEFAULT_SP_GRAPH_REPARTITION;
+        if (cli.hasOption(PARAMETER.SP_GRAPH_REPARTITION.getLongOpt())) {
+            String spGraphRepartitionValue = cli.getOptionValue(PARAMETER.SP_GRAPH_REPARTITION.getLongOpt());
+            spGraphRepartition = ParameterParser.parse(PARAMETER.SP_GRAPH_REPARTITION, spGraphRepartitionValue, (input) -> Integer.parseInt(input));
+        }
+        appContext.setSpGraphRepartition(spGraphRepartition);
         
         return appContext;
     }

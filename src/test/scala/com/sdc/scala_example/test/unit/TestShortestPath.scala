@@ -15,6 +15,7 @@ import scala.collection.Map
 import com.sdc.scala_example.shortestpath.single_source.VertexShortestPath
 import org.apache.spark.graphx.lib.ShortestPaths
 import org.junit.Ignore
+import com.sdc.scala_example.shortestpath.custom_function.ShortestPathCustomCostFunction
 
 
 class TestShortestPath extends TestWithSparkSession {
@@ -75,7 +76,7 @@ class TestShortestPath extends TestWithSparkSession {
         
     }    
         
-    @Ignore
+    @Test
     def testSPDistance(){
         testSP(ShortestPathSingleSourceForward.COST_FUNCTION.DISTANCE,
             Map(1l -> new VertexShortestPath(0.0,-1)
@@ -89,7 +90,7 @@ class TestShortestPath extends TestWithSparkSession {
 
     }
     
-    @Ignore
+    @Test
     def testSPTravelTime(){
         
         testSP(ShortestPathSingleSourceForward.COST_FUNCTION.TRAVEL_TIME,
@@ -128,5 +129,40 @@ class TestShortestPath extends TestWithSparkSession {
         
     }
     
+    
+    @Test
+    def testSPCustomFunction(){
+        
+        
+        var nodes = createNodes()
+        var links = createLinks(nodes)
+
+        val nodesRdd = getSpark().sparkContext.parallelize(nodes)
+        val vertices = nodesRdd.map(n => (n.getId, n))
+        
+        val linksRdd = getSpark().sparkContext.parallelize(links)
+        val edges = linksRdd.map(l => Edge(l.getTail(), l.getHead(), l.length))
+        
+        val graphx = Graph(vertices, edges)
+
+        val destId = 6l
+        
+        val sp = ShortestPathCustomCostFunction.run(graphx, Seq(destId))
+        
+        val spVertices = sp.vertices.collectAsMap()
+        println(spVertices.mkString(System.lineSeparator()))
+        
+        val expected = Map(1l -> Map(destId -> 60.0f)
+            , 2l -> Map(destId -> 30.0f)
+            , 3l -> Map(destId -> 40.0f)
+            , 4l -> Map(destId -> 20.0f)
+            , 5l -> Map(destId -> 50.0f)
+            , 6l -> Map(destId -> 0.0f))
+        
+        for((k, v) <- expected){
+            assertThat(spVertices.get(k).get.get(destId).get, is(equalTo(v.get(destId).get)))
+        }
+        
+    }
     
 }

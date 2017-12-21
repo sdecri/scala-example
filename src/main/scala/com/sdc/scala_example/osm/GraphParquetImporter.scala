@@ -10,25 +10,26 @@ import org.apache.spark.graphx.Edge
 import org.slf4j.LoggerFactory
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
+import com.sdc.scala_example.command_line.AppContext
 
 object GraphParquetImporter {
 
     private val LOG = LoggerFactory.getLogger(getClass)
     
-    case class Context(nodesFile : String, linksFile : String){
-        
-        override def toString() :String = "NODES_FILE = %s, LINKS_FILE = %s"
-        .format(nodesFile,linksFile)
-    }
-    
     case class ImportResult(graph :Graph[Node, Link], nodesDF :Dataset[Row], linksDF :Dataset[Row])
     
-    def importToNetwork(sparkSession :SparkSession, context :Context) :ImportResult = {
+    def importToNetwork(sparkSession :SparkSession, appContext :AppContext) :ImportResult = {
        
-        LOG.info("Import internal formal network parquet with context: %s".format(context))
+        LOG.info("Import internal formal network parquet with: %s, %s"
+                .format(appContext.getNodesFilePath, appContext.getLinksFilePath))
         
-        val nodesDF = sparkSession.read.parquet(context.nodesFile)       
-        val linksDF = sparkSession.read.parquet(context.linksFile)
+        var nodesDF = sparkSession.read.parquet(appContext.getNodesFilePath)    
+        var linksDF = sparkSession.read.parquet(appContext.getLinksFilePath)
+        if(appContext.getSpGraphRepartition > 0){
+            LOG.info("Repartition graph vertices and edges with num partition = %d".format(appContext.getSpGraphRepartition))
+            nodesDF = nodesDF.repartition(appContext.getSpGraphRepartition)
+            linksDF = linksDF.repartition(appContext.getSpGraphRepartition)
+        }
         
         val nodesRDD = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
         val edgesRDD = linksDF.rdd.map(row => {

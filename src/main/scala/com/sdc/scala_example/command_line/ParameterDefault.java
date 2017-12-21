@@ -18,5 +18,6 @@ public class ParameterDefault {
     public static final int DEFAULT_SP_NEAREST_ATTEMPS = 3;
     public static final int DEFAULT_SP_NEAREST_FACTOR = 10;
     public static final int DEFAULT_SP_RANDOM_GRAPH_NUM_VERTICES = 100;
+    public static final int DEFAULT_SP_GRAPH_REPARTITION = -1;
     
 }
