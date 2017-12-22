@@ -104,7 +104,7 @@ object ShortestPathSingleSourceForward extends Serializable {
         val pregel = Pregel(spGraph, initialMessage, activeDirection = EdgeDirection.Out)(vertexProgram, sendMessage, mergeMessage)
 
         val elapsed = System.nanoTime() - start
-        LOG.info("Shortest path elapsed time: %s".format(Duration.ofNanos(elapsed)))
+        println("Shortest path elapsed time: %s".format(Duration.ofNanos(elapsed)))
         
         pregel
     }

@@ -61,7 +61,7 @@ object ShortestPathCustomCostFunction extends Serializable {
         val pregel = Pregel(spGraph, initialMessage, activeDirection = EdgeDirection.In)(vertexProgram, sendMessage, addMaps)
 
         val elapsed = System.nanoTime() - start
-        LOG.info("Shortest path elapsed time: %s".format(Duration.ofNanos(elapsed)))
+        println("Shortest path elapsed time: %s".format(Duration.ofNanos(elapsed)))
         
         pregel
     }
