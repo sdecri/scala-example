@@ -1,14 +1,14 @@
-package com.sdc.scala_example.osm
+package com.sdc.graphx_example.osm
 
 import java.io.File
 import org.apache.spark.sql._
 import org.apache.spark.sql.SQLImplicits
 import org.apache.spark.sql.functions._
-import com.sdc.scala_example.network.Link
+import com.sdc.graphx_example.network.Link
 import scala.collection.mutable.WrappedArray
-import com.sdc.scala_example.geometry.GeometryUtils
+import com.sdc.graphx_example.geometry.GeometryUtils
 import org.slf4j.LoggerFactory
-import com.sdc.scala_example.command_line.AppContext
+import com.sdc.graphx_example.command_line.AppContext
 
 /**
  * Class that import osm parquet produced with osm-parquetizer

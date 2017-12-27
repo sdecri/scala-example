@@ -1,7 +1,7 @@
 /**
  * NodeNotFoundException.java
  */
-package com.sdc.scala_example.exception;
+package com.sdc.graphx_example.exception;
 
 
 /**

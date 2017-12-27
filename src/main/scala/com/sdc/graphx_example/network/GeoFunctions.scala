@@ -1,9 +1,9 @@
-package com.sdc.scala_example.network
+package com.sdc.graphx_example.network
 
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.SQLContext
 import com.vividsolutions.jts.geom.Point
-import com.sdc.scala_example.geometry.GeometryUtils
+import com.sdc.graphx_example.geometry.GeometryUtils
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.Dataset
 import org.slf4j.LoggerFactory

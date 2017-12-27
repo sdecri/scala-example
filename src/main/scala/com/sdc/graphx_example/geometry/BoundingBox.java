@@ -1,7 +1,7 @@
 /**
  * BoundingBox.java
  */
-package com.sdc.scala_example.geometry;
+package com.sdc.graphx_example.geometry;
 
 import java.io.Serializable;
 import java.util.List;

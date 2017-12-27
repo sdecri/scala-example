@@ -1,4 +1,4 @@
-package com.sdc.scala_example.command_line;
+package com.sdc.graphx_example.command_line;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sdc.scala_example.geometry.GeometryUtils;
+import com.sdc.graphx_example.geometry.GeometryUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 
 

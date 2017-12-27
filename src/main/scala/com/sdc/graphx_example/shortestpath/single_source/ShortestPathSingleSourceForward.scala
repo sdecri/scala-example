@@ -1,7 +1,7 @@
-package com.sdc.scala_example.shortestpath.single_source
+package com.sdc.graphx_example.shortestpath.single_source
 
 import org.apache.spark.graphx._
-import com.sdc.scala_example.network.Link
+import com.sdc.graphx_example.network.Link
 import org.slf4j.LoggerFactory
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.types.LongType

@@ -1,21 +1,21 @@
-package com.sdc.scala_example.test.unit
+package com.sdc.graphx_example.test.unit
 
 import org.junit.Test
-import com.sdc.scala_example.network.Link
-import com.sdc.scala_example.network.Node
+import com.sdc.graphx_example.network.Link
+import com.sdc.graphx_example.network.Node
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkConf
 import org.apache.spark.graphx.Edge
 import org.apache.spark.graphx.Graph
 import org.slf4j.LoggerFactory
-import com.sdc.scala_example.shortestpath.single_source.ShortestPathSingleSourceForward
+import com.sdc.graphx_example.shortestpath.single_source.ShortestPathSingleSourceForward
 import org.hamcrest.Matchers._
 import org.junit.Assert._
 import scala.collection.Map
-import com.sdc.scala_example.shortestpath.single_source.VertexShortestPath
+import com.sdc.graphx_example.shortestpath.single_source.VertexShortestPath
 import org.apache.spark.graphx.lib.ShortestPaths
 import org.junit.Ignore
-import com.sdc.scala_example.shortestpath.custom_function.ShortestPathCustomCostFunction
+import com.sdc.graphx_example.shortestpath.custom_function.ShortestPathCustomCostFunction
 
 
 class TestShortestPath extends TestWithSparkSession {
@@ -23,7 +23,7 @@ class TestShortestPath extends TestWithSparkSession {
     val LOG = LoggerFactory.getLogger(classOf[TestShortestPath])
 
     
-    def createLinks(nodes : List[com.sdc.scala_example.network.Node]) = List(
+    def createLinks(nodes : List[com.sdc.graphx_example.network.Node]) = List(
         new Link(1, 1, 3, 20, 10)
         , new Link(2, 1, 2, 40, 10)
         , new Link(3, 3, 2, 10, 10)

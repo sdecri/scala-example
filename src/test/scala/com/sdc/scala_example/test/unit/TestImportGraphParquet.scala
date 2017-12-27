@@ -1,11 +1,11 @@
-package com.sdc.scala_example.test.unit
+package com.sdc.graphx_example.test.unit
 
 import org.junit.Test
-import com.sdc.scala_example.osm.GraphParquetImporter
+import com.sdc.graphx_example.osm.GraphParquetImporter
 import java.io.File
 import org.hamcrest.Matchers._
 import org.junit.Assert._
-import com.sdc.scala_example.command_line.AppContext
+import com.sdc.graphx_example.command_line.AppContext
 
 @Test
 class TestImportGraphParquet extends TestWithSparkSession {

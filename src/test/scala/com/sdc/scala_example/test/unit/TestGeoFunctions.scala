@@ -1,10 +1,10 @@
-package com.sdc.scala_example.test.unit
+package com.sdc.graphx_example.test.unit
 
 import org.junit.Test
-import com.sdc.scala_example.network.Node
-import com.sdc.scala_example.network.GeoFunctions
+import com.sdc.graphx_example.network.Node
+import com.sdc.graphx_example.network.GeoFunctions
 import com.vividsolutions.jts.geom.Point
-import com.sdc.scala_example.geometry.GeometryUtils
+import com.sdc.graphx_example.geometry.GeometryUtils
 import com.vividsolutions.jts.geom.Coordinate
 import org.hamcrest.Matchers._
 import org.junit.Assert._

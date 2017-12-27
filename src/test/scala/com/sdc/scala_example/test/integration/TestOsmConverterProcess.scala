@@ -1,13 +1,13 @@
-package com.sdc.scala_example.test.integration
+package com.sdc.graphx_example.test.integration
 
 import org.junit.Test
-import com.sdc.scala_example.test.unit.TestWithSparkSession
-import com.sdc.scala_example.App
+import com.sdc.graphx_example.test.unit.TestWithSparkSession
+import com.sdc.graphx_example.App
 import java.io.File
 
 import org.hamcrest.Matchers._
 import org.junit.Assert._
-import com.sdc.scala_example.command_line.RUN_TYPE
+import com.sdc.graphx_example.command_line.RUN_TYPE
 import org.apache.spark.sql.SQLContext
 import scala.collection.Map
 

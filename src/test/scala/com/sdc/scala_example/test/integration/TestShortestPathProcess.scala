@@ -1,18 +1,18 @@
-package com.sdc.scala_example.test.integration
+package com.sdc.graphx_example.test.integration
 
 import org.junit.Test
-import com.sdc.scala_example.test.unit.TestWithSparkSession
-import com.sdc.scala_example.command_line.RUN_TYPE
-import com.sdc.scala_example.shortestpath.single_source.ShortestPathSingleSourceForward
+import com.sdc.graphx_example.test.unit.TestWithSparkSession
+import com.sdc.graphx_example.command_line.RUN_TYPE
+import com.sdc.graphx_example.shortestpath.single_source.ShortestPathSingleSourceForward
 import java.io.File
-import com.sdc.scala_example.App
+import com.sdc.graphx_example.App
 
 import org.hamcrest.Matchers._
 import org.junit.Assert._
 import org.apache.spark.sql.SQLContext
 import org.slf4j.LoggerFactory
 import org.junit.Ignore
-import com.sdc.scala_example.shortestpath.ShortestPathProcess
+import com.sdc.graphx_example.shortestpath.ShortestPathProcess
 import org.apache.spark.sql.functions._
 import org.apache.spark.graphx.util.GraphGenerators
 

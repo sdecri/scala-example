@@ -1,7 +1,7 @@
 /**
  * AppContext.javaDistance
  */
-package com.sdc.scala_example.command_line;
+package com.sdc.graphx_example.command_line;
 
 import com.vividsolutions.jts.geom.Point;
 

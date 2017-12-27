@@ -1,7 +1,7 @@
 /**
  * PARAMETER.java
  */
-package com.sdc.scala_example.command_line;
+package com.sdc.graphx_example.command_line;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.apache.commons.cli.OptionBuilder;
 public enum PARAMETER {
     SPARK_MASTER ("spark-master","Master url of the cluster (e.g. spark://23.195.26.187:7077).", true, String.class, false)
     ,RUN_TYPE( "run-type",String.format("Run type. Available values: %s."
-            , Arrays.toString(com.sdc.scala_example.command_line.RUN_TYPE.getValues().toArray()))
+            , Arrays.toString(com.sdc.graphx_example.command_line.RUN_TYPE.getValues().toArray()))
             , true, String.class, false)
     ,OSM_NODES_FILE ( "osm-nodes-file","Parquet osm nodes file path.", true, String.class, false)
     ,OSM_WAYS_FILE ( "osm-ways-file","Parquet osm ways file path.", true, String.class, false)

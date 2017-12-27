@@ -1,7 +1,7 @@
 /**
  * ParameterParser.java
  */
-package com.sdc.scala_example.command_line;
+package com.sdc.graphx_example.command_line;
 
 import java.util.function.Function;
 

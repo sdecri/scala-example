@@ -1,4 +1,4 @@
-package com.sdc.scala_example.test.unit
+package com.sdc.graphx_example.test.unit
 
 import org.apache.spark.sql.SparkSession
 import org.junit.Before

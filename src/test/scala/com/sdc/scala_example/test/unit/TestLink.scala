@@ -1,7 +1,7 @@
-package com.sdc.scala_example.test.unit
+package com.sdc.graphx_example.test.unit
 
 import org.junit.Test
-import com.sdc.scala_example.network._
+import com.sdc.graphx_example.network._
 import org.hamcrest.Matchers._
 import org.junit.Assert._
 

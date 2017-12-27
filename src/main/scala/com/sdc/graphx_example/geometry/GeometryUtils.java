@@ -1,4 +1,4 @@
-package com.sdc.scala_example.geometry;
+package com.sdc.graphx_example.geometry;
 
 import java.util.List;
 import java.util.Random;

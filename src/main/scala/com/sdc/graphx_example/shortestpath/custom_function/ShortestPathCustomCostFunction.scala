@@ -1,4 +1,4 @@
-package com.sdc.scala_example.shortestpath.custom_function
+package com.sdc.graphx_example.shortestpath.custom_function
 
 import org.apache.spark.graphx.Graph
 import org.apache.spark.graphx.EdgeTriplet

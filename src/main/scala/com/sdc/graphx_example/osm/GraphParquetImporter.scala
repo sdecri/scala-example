@@ -1,16 +1,16 @@
-package com.sdc.scala_example.osm
+package com.sdc.graphx_example.osm
 
 import java.io.File
 import java.io.File
 import org.apache.spark.graphx.Graph
-import com.sdc.scala_example.network.Link
+import com.sdc.graphx_example.network.Link
 import org.apache.spark.sql.SparkSession
-import com.sdc.scala_example.network.Node
+import com.sdc.graphx_example.network.Node
 import org.apache.spark.graphx.Edge
 import org.slf4j.LoggerFactory
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
-import com.sdc.scala_example.command_line.AppContext
+import com.sdc.graphx_example.command_line.AppContext
 
 object GraphParquetImporter {
 

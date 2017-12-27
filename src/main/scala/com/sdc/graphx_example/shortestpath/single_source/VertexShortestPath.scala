@@ -1,4 +1,4 @@
-package com.sdc.scala_example.shortestpath.single_source
+package com.sdc.graphx_example.shortestpath.single_source
 
 class VertexShortestPath extends Serializable {
 

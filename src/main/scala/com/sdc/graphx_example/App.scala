@@ -1,10 +1,10 @@
-package com.sdc.scala_example
+package com.sdc.graphx_example
 
-import com.sdc.scala_example.network.Node
-import com.sdc.scala_example.network.Link
+import com.sdc.graphx_example.network.Node
+import com.sdc.graphx_example.network.Link
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.SparkConf
-import com.sdc.scala_example.network.Link
+import com.sdc.graphx_example.network.Link
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.IntegerType
@@ -16,21 +16,21 @@ import org.slf4j.LoggerFactory
 import org.apache.spark.graphx.lib.ShortestPaths
 import org.apache.spark.graphx.Graph
 import org.apache.spark.graphx.Edge
-import com.sdc.scala_example.shortestpath.single_source.ShortestPathSingleSourceForward
-import com.sdc.scala_example.command_line.CommandLineManager
-import com.sdc.scala_example.command_line.PARAMETER
-import com.sdc.scala_example.command_line.RUN_TYPE
-import com.sdc.scala_example.osm.OsmParquetConverter
+import com.sdc.graphx_example.shortestpath.single_source.ShortestPathSingleSourceForward
+import com.sdc.graphx_example.command_line.CommandLineManager
+import com.sdc.graphx_example.command_line.PARAMETER
+import com.sdc.graphx_example.command_line.RUN_TYPE
+import com.sdc.graphx_example.osm.OsmParquetConverter
 import java.io.File
-import com.sdc.scala_example.osm.GraphParquetImporter
-import com.sdc.scala_example.command_line.AppContext
-import com.sdc.scala_example.geometry.GeometryUtils
+import com.sdc.graphx_example.osm.GraphParquetImporter
+import com.sdc.graphx_example.command_line.AppContext
+import com.sdc.graphx_example.geometry.GeometryUtils
 import com.vividsolutions.jts.geom.Point
 import org.apache.spark.sql.SQLContext
-import com.sdc.scala_example.network.GeoFunctions
-import com.sdc.scala_example.exception.NodeNotFoundException
+import com.sdc.graphx_example.network.GeoFunctions
+import com.sdc.graphx_example.exception.NodeNotFoundException
 import org.apache.spark.sql.SaveMode
-import com.sdc.scala_example.shortestpath.ShortestPathProcess
+import com.sdc.graphx_example.shortestpath.ShortestPathProcess
 
 /**
  * @author ${user.name}

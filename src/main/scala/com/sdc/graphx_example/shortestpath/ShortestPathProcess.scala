@@ -1,16 +1,16 @@
-package com.sdc.scala_example.shortestpath
+package com.sdc.graphx_example.shortestpath
 
-import com.sdc.scala_example.command_line.AppContext
-import com.sdc.scala_example.osm.GraphParquetImporter
+import com.sdc.graphx_example.command_line.AppContext
+import com.sdc.graphx_example.osm.GraphParquetImporter
 import org.slf4j.LoggerFactory
-import com.sdc.scala_example.network.GeoFunctions
-import com.sdc.scala_example.exception.NodeNotFoundException
+import com.sdc.graphx_example.network.GeoFunctions
+import com.sdc.graphx_example.exception.NodeNotFoundException
 import org.apache.spark.sql.Row
-import com.sdc.scala_example.App
+import com.sdc.graphx_example.App
 import org.apache.spark.sql.SaveMode
 import org.apache.spark.graphx.Graph
-import com.sdc.scala_example.network.Node
-import com.sdc.scala_example.network.Link
+import com.sdc.graphx_example.network.Node
+import com.sdc.graphx_example.network.Link
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.graphx.lib.ShortestPaths
 import org.apache.spark.sql.types.StructType
@@ -20,9 +20,9 @@ import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.types.MapType
 import org.apache.spark.sql.types.ArrayType
 import org.apache.spark.sql.types.StringType
-import com.sdc.scala_example.shortestpath.single_source.ShortestPathSingleSourceForward
-import com.sdc.scala_example.shortestpath.single_source.ShortestPathSingleSourceForward.COST_FUNCTION
-import com.sdc.scala_example.shortestpath.custom_function.ShortestPathCustomCostFunction
+import com.sdc.graphx_example.shortestpath.single_source.ShortestPathSingleSourceForward
+import com.sdc.graphx_example.shortestpath.single_source.ShortestPathSingleSourceForward.COST_FUNCTION
+import com.sdc.graphx_example.shortestpath.custom_function.ShortestPathCustomCostFunction
 import org.apache.spark.graphx.util.GraphGenerators
 import scala.util.Random
 import org.apache.spark.sql.types.DoubleType

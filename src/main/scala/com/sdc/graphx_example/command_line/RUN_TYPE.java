@@ -1,7 +1,7 @@
 /**
  * RUN_TYPE.java
  */
-package com.sdc.scala_example.command_line;
+package com.sdc.graphx_example.command_line;
 
 import java.util.Arrays;
 import java.util.List;
