@@ -25,6 +25,17 @@ object OsmParquetConverter {
 
     def convertToNetwork[VD](sparkSession : SparkSession, context :AppContext) : Unit = {
 
+        //debug_sdc
+        if(true){
+            val waysDF : Dataset[Row] = sparkSession.read.parquet(context.getOsmWaysFilePath)        
+            println("Number of partitions of imported ways: %d".format(waysDF.rdd.getNumPartitions))
+            println("Number of all imported ways: %d".format(waysDF.count()))
+            waysDF.cache()
+            println("Number of partitions of imported ways: %d".format(waysDF.rdd.getNumPartitions))
+            println("Number of all imported ways: %d".format(waysDF.count()))
+            return
+        }
+        
         LOG.info("Convert OSM parquet to internal network parquet with context: %s".format(context))
         
         var allNodeDF = convertNodes(sparkSession, context)
@@ -39,19 +50,21 @@ object OsmParquetConverter {
         if(context.getOsmConverterPersistNodes){
             if (context.getNodesRepartitionOutput > 0)
                 nodeDF = nodeDF.repartition(context.getNodesRepartitionOutput)
+            nodeDF.cache()
             nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)
-            LOG.info("Number of network nodes: %d".format(nodeDF.count()))
         }
+        LOG.info("Number of network nodes: %d".format(nodeDF.count()))
+
         
         val linksParquetFilePath = context.getOutputDir + "links"
         var linkDS = net._2
-        linkDS.cache()
         if(context.getOsmConverterPersistLinks) {
             if (context.getLinksRepartitionOutput > 0)
                 linkDS = linkDS.repartition(context.getLinksRepartitionOutput)
+            linkDS.cache()                
             linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
-            LOG.info("Number of network links: %d".format(linkDS.count()))
         }
+        LOG.info("Number of network links: %d".format(linkDS.count()))
 
     }
 
@@ -66,6 +79,9 @@ object OsmParquetConverter {
 
         val waysDF : Dataset[Row] = sparkSession.read.parquet(context.getOsmWaysFilePath)
 
+        //debug_sdc
+        LOG.info("Number of partitions of imported ways: %d".format(waysDF.rdd.getNumPartitions))
+        LOG.info("Number of all imported ways: %d".format(waysDF.count()))
         waysDF.cache()
         LOG.info("Number of all imported ways: %d".format(waysDF.count()))
 
@@ -87,7 +103,7 @@ object OsmParquetConverter {
             
         var nodeLinkJoinDF = nodeDF.join(wayNodesDF, $"indexedNode.nodeId" === nodeDF("id"))
         nodeLinkJoinDF.cache()
-        var nodesInLinksDF = nodeLinkJoinDF.select($"id", $"latitude", $"longitude").dropDuplicates()
+        var nodesInLinksDF = nodeLinkJoinDF.select($"indexedNode.nodeId".as("id"), $"latitude", $"longitude").dropDuplicates()
             
         val wayDF = nodeLinkJoinDF.groupBy($"wayId", $"tags")
         .agg(collect_list(struct($"indexedNode.index", $"indexedNode.nodeId", $"latitude", $"longitude")).as("nodes")
@@ -106,7 +122,7 @@ object OsmParquetConverter {
 
                 var speed = defaultSpeed
                 val speedOption = tagsMap.get(speedTag)
-                if (!speedOption.isEmpty) speed = speedOption.get.toInt
+                if (!speedOption.isEmpty) speed = speedOption.get.toDouble
 
                 val isOneWay = tagsMap.getOrElse(oneWayTag, "no") == "yes"
                 val isRoundAbout = tagsMap.getOrElse(roundAboutTag, "default") == roundAboutValue
