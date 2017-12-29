@@ -26,7 +26,7 @@ object OsmParquetConverter {
     def convertToNetwork[VD](sparkSession : SparkSession, context :AppContext) : Unit = {
 
         //debug_sdc
-        if(true){
+        if(false){
             val waysDF : Dataset[Row] = sparkSession.read.parquet(context.getOsmWaysFilePath)        
             println("Number of partitions of imported ways: %d".format(waysDF.rdd.getNumPartitions))
             println("Number of all imported ways: %d".format(waysDF.count()))
@@ -39,7 +39,8 @@ object OsmParquetConverter {
         LOG.info("Convert OSM parquet to internal network parquet with context: %s".format(context))
         
         var allNodeDF = convertNodes(sparkSession, context)
-        allNodeDF.cache()
+        // debug_sdc
+//        allNodeDF.cache()
         
         LOG.info("Number of all imported nodes: %d".format(allNodeDF.count()))
         
@@ -78,11 +79,6 @@ object OsmParquetConverter {
         import sparkSession.sqlContext.implicits._
 
         val waysDF : Dataset[Row] = sparkSession.read.parquet(context.getOsmWaysFilePath)
-
-        //debug_sdc
-        LOG.info("Number of partitions of imported ways: %d".format(waysDF.rdd.getNumPartitions))
-        LOG.info("Number of all imported ways: %d".format(waysDF.count()))
-        waysDF.cache()
         LOG.info("Number of all imported ways: %d".format(waysDF.count()))
 
         val defaultSpeed = 50.0
@@ -97,8 +93,9 @@ object OsmParquetConverter {
         
         val wayNodesDF = wayFiteredDF.select($"id".as("wayId"), $"tags", explode($"nodes").as("indexedNode"))
         .withColumn("linkId", monotonically_increasing_id())
-            
-        wayNodesDF.cache()
+        
+        //debug_sdc
+//        wayNodesDF.cache()
         val totalBidirectionalLinks = wayNodesDF.count()
             
         var nodeLinkJoinDF = nodeDF.join(wayNodesDF, $"indexedNode.nodeId" === nodeDF("id"))
