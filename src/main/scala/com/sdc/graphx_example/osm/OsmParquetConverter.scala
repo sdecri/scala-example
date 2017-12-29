@@ -51,7 +51,7 @@ object OsmParquetConverter {
         if(context.getOsmConverterPersistNodes){
             if (context.getNodesRepartitionOutput > 0)
                 nodeDF = nodeDF.repartition(context.getNodesRepartitionOutput)
-            nodeDF.cache()
+//            nodeDF.cache()
             nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)
         }
         //debug_sdc
@@ -63,7 +63,7 @@ object OsmParquetConverter {
         if(context.getOsmConverterPersistLinks) {
             if (context.getLinksRepartitionOutput > 0)
                 linkDS = linkDS.repartition(context.getLinksRepartitionOutput)
-            linkDS.cache()                
+//            linkDS.cache()                
             linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
         }
         //debug_sdc        
