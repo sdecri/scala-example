@@ -54,7 +54,8 @@ object OsmParquetConverter {
             nodeDF.cache()
             nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)
         }
-        LOG.info("Number of network nodes: %d".format(nodeDF.count()))
+        //debug_sdc
+//        LOG.info("Number of network nodes: %d".format(nodeDF.count()))
 
         
         val linksParquetFilePath = context.getOutputDir + "links"
@@ -65,7 +66,8 @@ object OsmParquetConverter {
             linkDS.cache()                
             linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
         }
-        LOG.info("Number of network links: %d".format(linkDS.count()))
+        //debug_sdc        
+//        LOG.info("Number of network links: %d".format(linkDS.count()))
 
     }
 
