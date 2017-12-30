@@ -51,7 +51,7 @@ object OsmParquetConverter {
             linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
         }
         val linkCounter = net._3
-        println("Number of network links: %d".format(linkCounter))
+        println("Number of network links: %d".format(linkCounter.count))
 
     }
 
@@ -144,7 +144,7 @@ object OsmParquetConverter {
             links
         })
 
-        (nodesInLinksDF, linkDS, linkCounter.count)
+        (nodesInLinksDF, linkDS, linkCounter)
     }
     
     
