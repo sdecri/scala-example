@@ -24,23 +24,10 @@ object OsmParquetConverter {
 
 
     def convertToNetwork[VD](sparkSession : SparkSession, context :AppContext) : Unit = {
-
-        //debug_sdc
-        if(false){
-            val waysDF : Dataset[Row] = sparkSession.read.parquet(context.getOsmWaysFilePath)        
-            println("Number of partitions of imported ways: %d".format(waysDF.rdd.getNumPartitions))
-            println("Number of all imported ways: %d".format(waysDF.count()))
-            waysDF.cache()
-            println("Number of partitions of imported ways: %d".format(waysDF.rdd.getNumPartitions))
-            println("Number of all imported ways: %d".format(waysDF.count()))
-            return
-        }
         
         LOG.info("Convert OSM parquet to internal network parquet with context: %s".format(context))
         
         var allNodeDF = convertNodes(sparkSession, context)
-        // debug_sdc
-//        allNodeDF.cache()
         
         LOG.info("Number of all imported nodes: %d".format(allNodeDF.count()))
         
@@ -51,7 +38,6 @@ object OsmParquetConverter {
         if(context.getOsmConverterPersistNodes){
             if (context.getNodesRepartitionOutput > 0)
                 nodeDF = nodeDF.repartition(context.getNodesRepartitionOutput)
-//            nodeDF.cache()
             nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)
         }
         //debug_sdc
@@ -63,11 +49,10 @@ object OsmParquetConverter {
         if(context.getOsmConverterPersistLinks) {
             if (context.getLinksRepartitionOutput > 0)
                 linkDS = linkDS.repartition(context.getLinksRepartitionOutput)
-//            linkDS.cache()                
             linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
         }
-        //debug_sdc        
-//        LOG.info("Number of network links: %d".format(linkDS.count()))
+        val linkCounter = net._3
+        LOG.info("Number of network links: %d".format(linkCounter))
 
     }
 
@@ -107,7 +92,9 @@ object OsmParquetConverter {
         val wayDF = nodeLinkJoinDF.groupBy($"wayId", $"tags")
         .agg(collect_list(struct($"indexedNode.index", $"indexedNode.nodeId", $"latitude", $"longitude")).as("nodes")
         , collect_list($"linkId").as("linkIds"))
-                            
+        
+        val linkCounter = sparkSession.sparkContext.longAccumulator("linkCounter")
+        
         var linkDS = wayDF.flatMap((row : Row) => {
 
             var links : List[Link] = List.empty[Link]
@@ -139,11 +126,13 @@ object OsmParquetConverter {
                     var head = nodes(i + 1)
 
                     links = links :+ createLink(tail, head, linkIds(i), speed)
-
+                    linkCounter.add(1)
+                    
                     if (!isOneWay && !isRoundAbout) {
                         tail = nodes(i + 1)
                         head = nodes(i)
                         links = links :+ createLink(tail, head, linkIds(i) + totalBidirectionalLinks, speed)
+                        linkCounter.add(1)
                     }
 
                 }
@@ -156,7 +145,7 @@ object OsmParquetConverter {
             links
         })
 
-        (nodesInLinksDF, linkDS)
+        (nodesInLinksDF, linkDS, linkCounter.count)
     }
     
     
