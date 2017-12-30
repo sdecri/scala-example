@@ -40,8 +40,7 @@ object OsmParquetConverter {
                 nodeDF = nodeDF.repartition(context.getNodesRepartitionOutput)
             nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)
         }
-        //debug_sdc
-//        LOG.info("Number of network nodes: %d".format(nodeDF.count()))
+        println("Number of network nodes: %d".format(nodeDF.count()))
 
         
         val linksParquetFilePath = context.getOutputDir + "links"
@@ -52,7 +51,7 @@ object OsmParquetConverter {
             linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
         }
         val linkCounter = net._3
-        LOG.info("Number of network links: %d".format(linkCounter))
+        println("Number of network links: %d".format(linkCounter))
 
     }
 
