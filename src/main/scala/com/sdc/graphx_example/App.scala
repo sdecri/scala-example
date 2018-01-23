@@ -31,6 +31,7 @@ import com.sdc.graphx_example.network.GeoFunctions
 import com.sdc.graphx_example.exception.NodeNotFoundException
 import org.apache.spark.sql.SaveMode
 import com.sdc.graphx_example.shortestpath.ShortestPathProcess
+import org.apache.spark.storage.StorageLevel
 
 /**
  * @author ${user.name}
@@ -78,6 +79,21 @@ object App {
                 } else if (appContext.getRunType == RUN_TYPE.SHORTEST_PATH_RANDOM_GRAPH){
                     
                     ShortestPathProcess.runShortestPathRandomGraph(appContext, session)
+                    
+                } else if (appContext.getRunType == RUN_TYPE.NETWORK_COUNT){
+                    
+                    var nodesDF = session.read.parquet(appContext.getNodesFilePath)
+                    var linksDF = session.read.parquet(appContext.getLinksFilePath)
+                    val nodesRDD = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
+                    val edgesRDD = linksDF.rdd.map(row => {
+                        val link = Link.fromRow(row)
+                        Edge(link.getTail(), link.getHead(), link)
+                    })
+                    nodesRDD.persist(StorageLevel.MEMORY_AND_DISK)
+                    edgesRDD.persist(StorageLevel.MEMORY_AND_DISK)
+                    LOG.info("Graph number of vertices: %d".format(nodesRDD.count()))
+                    LOG.info("Graph number of edges: %d".format(edgesRDD.count()))
+                    scala.io.StdIn.readLine("waiting for app manual end...")
                     
                 }                
                 else

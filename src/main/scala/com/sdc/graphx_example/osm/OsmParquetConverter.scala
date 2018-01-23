@@ -9,6 +9,8 @@ import scala.collection.mutable.WrappedArray
 import com.sdc.graphx_example.geometry.GeometryUtils
 import org.slf4j.LoggerFactory
 import com.sdc.graphx_example.command_line.AppContext
+import org.apache.spark.storage.StorageLevel
+import com.sdc.graphx_example.network.SimplePoint
 
 /**
  * Class that import osm parquet produced with osm-parquetizer
@@ -77,11 +79,10 @@ object OsmParquetConverter {
 //        .where(($"id" === 26984518 || $"id" === 82222601 || $"id" === 138006028))
         
         
+        
         val wayNodesDF = wayFiteredDF.select($"id".as("wayId"), $"tags", explode($"nodes").as("indexedNode"))
         .withColumn("linkId", monotonically_increasing_id())
         
-        //debug_sdc
-//        wayNodesDF.cache()
         val totalBidirectionalLinks = wayNodesDF.count()
             
         var nodeLinkJoinDF = nodeDF.join(wayNodesDF, $"indexedNode.nodeId" === nodeDF("id"))
@@ -94,7 +95,7 @@ object OsmParquetConverter {
         
         val linkCounter = sparkSession.sparkContext.longAccumulator("linkCounter")
         
-        var linkDS = wayDF.flatMap((row : Row) => {
+        var linkDF = wayDF.flatMap((row : Row) => {
 
             var links : List[Link] = List.empty[Link]
             var tagsMap = Map.empty[String, String]
@@ -142,7 +143,31 @@ object OsmParquetConverter {
                 }
             }
             links
+        }).toDF()
+        
+        linkDF.persist(StorageLevel.MEMORY_AND_DISK)
+        
+        // fill tail coordinates
+        val linkWithTailDF = linkDF.alias("links").join(nodesInLinksDF.alias("nodes.*"), linkDF("tail") === nodeDF("id"))
+        .select($"links.*", $"nodes.longitude".as("tail_lon"), $"nodes.latitude".as("tail_lat"))
+        
+        val linkWithTailHeadDF = linkWithTailDF.alias("links").join(nodesInLinksDF.alias("nodes.*"), linkDF("head") === nodeDF("id"))
+        .select($"links.*", $"nodes.longitude".as("head_lon"), $"nodes.latitude".as("head_lat"))
+        
+        
+        var linkDS = linkWithTailHeadDF.map( (row:Row) => {
+            
+            val points = Array(SimplePoint(row.getFloat(5), row.getFloat(6)), SimplePoint(row.getFloat(7), row.getFloat(8)))
+            
+            Link(row.getLong(0)
+                    , row.getLong(1)
+                    , row.getLong(2)
+                    , row.getFloat(3)
+                    , row.getFloat(4)
+                    , points)
+            
         })
+        
 
         (nodesInLinksDF, linkDS, linkCounter)
     }
@@ -156,7 +181,7 @@ object OsmParquetConverter {
         val headLat = head._4
 
         val length = GeometryUtils.getDistance(tailLon, tailLat, headLon, headLat)
-        Link(linkId, tail._2, head._2, length.toFloat, speed.toFloat)
+        Link(linkId, tail._2, head._2, length.toFloat, speed.toFloat, null)
     }
     
     

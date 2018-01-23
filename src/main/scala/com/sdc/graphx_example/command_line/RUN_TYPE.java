@@ -18,6 +18,7 @@ public enum RUN_TYPE {
     ,SHORTEST_PATH_STANDARD("shortest-path-standard")
     ,SHORTEST_PATH_CUSTOM_COST_FUCNTION("shortest-path-custom-cost-function")
     ,SHORTEST_PATH_RANDOM_GRAPH("shortest-path-random-graph")
+    ,NETWORK_COUNT("network-count")
     ;
     
     private String value;
