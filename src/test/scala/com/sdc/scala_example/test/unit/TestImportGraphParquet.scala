@@ -7,7 +7,10 @@ import org.hamcrest.Matchers._
 import org.junit.Assert._
 import com.sdc.graphx_example.command_line.AppContext
 
-@Test
+import org.junit.runner.RunWith
+import org.junit.runners.BlockJUnit4ClassRunner
+
+@RunWith(classOf[BlockJUnit4ClassRunner])
 class TestImportGraphParquet extends TestWithSparkSession {
     
     @Test

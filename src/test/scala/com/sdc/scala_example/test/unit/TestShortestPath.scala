@@ -17,25 +17,29 @@ import org.apache.spark.graphx.lib.ShortestPaths
 import org.junit.Ignore
 import com.sdc.graphx_example.shortestpath.custom_function.ShortestPathCustomCostFunction
 
+import org.junit.runner.RunWith
+import org.junit.runners.BlockJUnit4ClassRunner
 
+@RunWith(classOf[BlockJUnit4ClassRunner])
+@Test
 class TestShortestPath extends TestWithSparkSession {
     
     val LOG = LoggerFactory.getLogger(classOf[TestShortestPath])
 
     
     def createLinks(nodes : List[com.sdc.graphx_example.network.Node]) = List(
-        new Link(1, 1, 3, 20, 10)
-        , new Link(2, 1, 2, 40, 10)
-        , new Link(3, 3, 2, 10, 10)
-        , new Link(4, 2, 5, 50, 10)
-        , new Link(5, 3, 4, 30, 10)
-        , new Link(6, 3, 6, 60, 10)
-        , new Link(7, 2, 4, 10, 10)
-        , new Link(8, 5, 4, 40, 10)
-        , new Link(9, 4, 5, 20, 10)
-        , new Link(10, 4, 6, 20, 10)
-        , new Link(11, 5, 6, 50, 10)
-        , new Link(12, 4, 6, 30, 10)
+        new Link(1, 1, 3, 20, 10, Array.empty)
+        , new Link(2, 1, 2, 40, 10, Array.empty)
+        , new Link(3, 3, 2, 10, 10, Array.empty)
+        , new Link(4, 2, 5, 50, 10, Array.empty)
+        , new Link(5, 3, 4, 30, 10, Array.empty)
+        , new Link(6, 3, 6, 60, 10, Array.empty)
+        , new Link(7, 2, 4, 10, 10, Array.empty)
+        , new Link(8, 5, 4, 40, 10, Array.empty)
+        , new Link(9, 4, 5, 20, 10, Array.empty)
+        , new Link(10, 4, 6, 20, 10, Array.empty)
+        , new Link(11, 5, 6, 50, 10, Array.empty)
+        , new Link(12, 4, 6, 30, 10, Array.empty)
     )
 
     def createNodes() : List[Node] = List(new Node(1, 1.0, 1.0), new Node(2, 3.0, 0.0),

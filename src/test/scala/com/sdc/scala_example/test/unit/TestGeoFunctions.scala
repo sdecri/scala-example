@@ -9,7 +9,10 @@ import com.vividsolutions.jts.geom.Coordinate
 import org.hamcrest.Matchers._
 import org.junit.Assert._
 
-@Test
+import org.junit.runner.RunWith
+import org.junit.runners.BlockJUnit4ClassRunner
+
+@RunWith(classOf[BlockJUnit4ClassRunner])
 class TestGeoFunctions extends TestWithSparkSession {
     
     @Test

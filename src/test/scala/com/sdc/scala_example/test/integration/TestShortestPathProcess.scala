@@ -16,7 +16,10 @@ import com.sdc.graphx_example.shortestpath.ShortestPathProcess
 import org.apache.spark.sql.functions._
 import org.apache.spark.graphx.util.GraphGenerators
 
-@Test
+import org.junit.runner.RunWith
+import org.junit.runners.BlockJUnit4ClassRunner
+
+@RunWith(classOf[BlockJUnit4ClassRunner])
 class TestShortestPathProcess extends TestWithSparkSession {
 
     private val LOG = LoggerFactory.getLogger(getClass)

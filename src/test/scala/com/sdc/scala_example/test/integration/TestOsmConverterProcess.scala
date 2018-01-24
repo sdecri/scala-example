@@ -10,8 +10,10 @@ import org.junit.Assert._
 import com.sdc.graphx_example.command_line.RUN_TYPE
 import org.apache.spark.sql.SQLContext
 import scala.collection.Map
+import org.junit.runner.RunWith
+import org.junit.runners.BlockJUnit4ClassRunner
 
-@Test
+@RunWith(classOf[BlockJUnit4ClassRunner])
 class TestOsmConverterProcess extends TestWithSparkSession {
 
     @Test
