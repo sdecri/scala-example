@@ -1,14 +1,12 @@
-
-
-package com.sdc.graphx_example.test.unit
+package com.sdc.scala_example.test.unit
 
 import org.junit.Test
-import com.sdc.graphx_example.network.Node
+import com.sdc.graphx_example.network._
 import org.hamcrest.Matchers._
 import org.junit.Assert._
-
 import org.junit.runner.RunWith
 import org.junit.runners.BlockJUnit4ClassRunner
+
 
 @RunWith(classOf[BlockJUnit4ClassRunner])
 class TestNode {
@@ -26,4 +24,5 @@ class TestNode {
         assertThat(n1, is(not(equalTo(n2))))
         
     }
+    
 }

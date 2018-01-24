@@ -5,8 +5,6 @@ import com.sdc.graphx_example.network._
 import org.hamcrest.Matchers._
 import org.junit.Assert._
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
-import junit.framework.TestSuite
 import org.junit.runners.BlockJUnit4ClassRunner
 
 

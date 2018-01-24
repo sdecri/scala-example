@@ -1,14 +1,15 @@
-package com.sdc.graphx_example.test.unit
+package com.sdc.scala_example.test.unit
 
 import org.junit.Test
-import com.sdc.graphx_example.osm.GraphParquetImporter
-import java.io.File
+import com.sdc.graphx_example.network._
 import org.hamcrest.Matchers._
 import org.junit.Assert._
-import com.sdc.graphx_example.command_line.AppContext
-
 import org.junit.runner.RunWith
 import org.junit.runners.BlockJUnit4ClassRunner
+import com.sdc.graphx_example.command_line.AppContext
+import com.sdc.graphx_example.osm.GraphParquetImporter
+import com.sdc.graphx_example.test.unit.TestWithSparkSession
+
 
 @RunWith(classOf[BlockJUnit4ClassRunner])
 class TestImportGraphParquet extends TestWithSparkSession {
