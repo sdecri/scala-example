@@ -1,7 +1,7 @@
 package com.sdc.graphx_example.shortestpath
 
 import com.sdc.graphx_example.command_line.AppContext
-import com.sdc.graphx_example.osm.GraphParquetImporter
+import com.sdc.graphx_example.osm.GraphImporter
 import org.slf4j.LoggerFactory
 import com.sdc.graphx_example.network.GeoFunctions
 import com.sdc.graphx_example.exception.NodeNotFoundException
@@ -45,7 +45,7 @@ object ShortestPathProcess {
     
     private def createContext(appContext : AppContext, session : SparkSession): Context = {
         
-        val network = GraphParquetImporter.importToNetwork(session, appContext)
+        val network = GraphImporter.importToNetwork(session, appContext)
         val graph = network.graph
         graph.cache()
         LOG.info("Graph number of vertices: %d".format(graph.vertices.count()))

@@ -20,9 +20,9 @@ import com.sdc.graphx_example.shortestpath.single_source.ShortestPathSingleSourc
 import com.sdc.graphx_example.command_line.CommandLineManager
 import com.sdc.graphx_example.command_line.PARAMETER
 import com.sdc.graphx_example.command_line.RUN_TYPE
-import com.sdc.graphx_example.osm.OsmParquetConverter
+import com.sdc.graphx_example.osm.OsmConverter
 import java.io.File
-import com.sdc.graphx_example.osm.GraphParquetImporter
+import com.sdc.graphx_example.osm.GraphImporter
 import com.sdc.graphx_example.command_line.AppContext
 import com.sdc.graphx_example.geometry.GeometryUtils
 import com.vividsolutions.jts.geom.Point
@@ -32,6 +32,7 @@ import com.sdc.graphx_example.exception.NodeNotFoundException
 import org.apache.spark.sql.SaveMode
 import com.sdc.graphx_example.shortestpath.ShortestPathProcess
 import org.apache.spark.storage.StorageLevel
+import org.apache.spark.sql.Encoders
 
 /**
  * @author ${user.name}
@@ -62,7 +63,7 @@ object App {
 
                 if (appContext.getRunType == RUN_TYPE.OSM_CONVERTER) {
 
-                    OsmParquetConverter.convertToNetwork(session, appContext)
+                    OsmConverter.convertToNetwork(session, appContext)
 
                 } else if (appContext.getRunType == RUN_TYPE.SHORTEST_PATH_SINGLE_SOURCE_FORWARD)
 
@@ -82,12 +83,13 @@ object App {
                     
                 } else if (appContext.getRunType == RUN_TYPE.NETWORK_COUNT){
                     
-                    var nodesDF = session.read.parquet(appContext.getNodesFilePath)
-                    var linksDF = session.read.parquet(appContext.getLinksFilePath)
-                    val nodesRDD = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
-                    val edgesRDD = linksDF.rdd.map(row => {
-                        val link = Link.fromRow(row)
-                        Edge(link.getTail(), link.getHead(), link)
+
+                    var nodesDS = session.read.json(appContext.getNodesFilePath).as(Encoders.product[Node])
+                    var linksDS = session.read.schema(Encoders.product[Link].schema).json(appContext.getLinksFilePath).as(Encoders.product[Link])
+                    
+                    val nodesRDD = nodesDS.rdd.map(node => (node.getId, node))
+                    val edgesRDD = linksDS.rdd.map(link => {
+                        Edge(link.getTail(),link.getHead(), link)
                     })
                     nodesRDD.persist(StorageLevel.MEMORY_AND_DISK)
                     edgesRDD.persist(StorageLevel.MEMORY_AND_DISK)

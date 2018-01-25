@@ -9,6 +9,7 @@ import org.apache.spark.sql.types.StringType
 import java.io.Serializable
 import org.apache.spark.sql.types.FloatType
 import breeze.linalg.split
+import org.apache.spark.sql.types.LongType
 
 /**
  * length in meters and speed in m/s
@@ -20,7 +21,7 @@ case class Link(id: Long, tail: Long, head: Long, length: Float, speed: Float, p
      */
     def getTravelTime(): Float = length / (speed)
 
-    def toRow(): Row = Row(id, tail, head, length, speed, points.mkString(Link.POINT_SEPARATOR))
+    def toRow(): Row = Row(id, tail, head, length, speed, points)
 
     def getId(): Long = this.id
     def getTail(): Long = this.tail
@@ -51,22 +52,23 @@ object Link {
 
     val POINT_SEPARATOR = "|"
 
-    val SCHEMA = StructType(List(
-        StructField("id", StringType)
-        , StructField("src", StringType)
-        , StructField("dst", StringType)
-        , StructField("length", FloatType)
-        , StructField("speed", FloatType)
-        , StructField("points", StringType)
-    ))
+//    val SCHEMA = StructType(List(
+//        StructField("id", LongType)
+//        , StructField("tail", LongType)
+//        , StructField("head", LongType)
+//        , StructField("length", FloatType)
+//        , StructField("speed", FloatType)
+//        , StructField("points", StructType(SimplePoint.SCHEMA.fields)
+//        )
+//    ))
 
-    def fromRow(row : Row) : Link = {
-
-        val points = row.getString(5).split(POINT_SEPARATOR)
-        .map(s => SimplePoint.parse(s))
-        
-        Link(row.getLong(0), row.getLong(1), row.getLong(2), row.getFloat(3), row.getFloat(4), points)
-
-    }
+//    def fromRow(row : Row) : Link = {
+//
+//        val points = row.getString(5).split(POINT_SEPARATOR)
+//        .map(s => SimplePoint.parse(s))
+//        
+//        Link(row.getLong(0), row.getLong(1), row.getLong(2), row.getFloat(3), row.getFloat(4), points)
+//
+//    }
 }
 

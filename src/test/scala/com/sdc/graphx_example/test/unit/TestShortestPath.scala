@@ -1,4 +1,4 @@
-package com.sdc.scala_example.test.unit
+package com.sdc.graphx_example.test.unit
 
 import org.junit.Test
 import com.sdc.graphx_example.network._
@@ -6,7 +6,6 @@ import org.hamcrest.Matchers._
 import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.junit.runners.BlockJUnit4ClassRunner
-import com.sdc.graphx_example.test.unit.TestWithSparkSession
 import org.slf4j.LoggerFactory
 
 import com.sdc.graphx_example.shortestpath.single_source.ShortestPathSingleSourceForward
@@ -38,9 +37,9 @@ class TestShortestPath extends TestWithSparkSession {
         , new Link(12, 4, 6, 30, 10, Array.empty)
     )
 
-    def createNodes() : List[Node] = List(new Node(1, 1.0, 1.0), new Node(2, 3.0, 0.0),
-        new Node(3, 3.0, 3.0), new Node(4, 5.0, 0.0), new Node(5, 5.0, 3.0),
-        new Node(6, 7.0, 1.0))
+    def createNodes() : List[Node] = List(Node(1, SimplePoint(1f, 1f)), Node(2, SimplePoint(3.0f, 0.0f)),
+        Node(3, SimplePoint(3.0f, 3.0f)), Node(4, SimplePoint(5.0f, 0.0f)), Node(5, SimplePoint(5.0f, 3.0f)),
+        Node(6, SimplePoint(7.0f, 1.0f)))
         
         
     private def testSP(spType :ShortestPathSingleSourceForward.COST_FUNCTION.Value, expected :Map[Long, VertexShortestPath]) {

@@ -11,35 +11,37 @@ import org.slf4j.LoggerFactory
 import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.Row
 import com.sdc.graphx_example.command_line.AppContext
+import org.apache.spark.sql.Encoders
 
-object GraphParquetImporter {
+object GraphImporter {
 
     private val LOG = LoggerFactory.getLogger(getClass)
     
-    case class ImportResult(graph :Graph[Node, Link], nodesDF :Dataset[Row], linksDF :Dataset[Row])
+    case class ImportResult(graph :Graph[Node, Link], nodesDF :Dataset[Node], linksDF :Dataset[Link])
     
     def importToNetwork(sparkSession :SparkSession, appContext :AppContext) :ImportResult = {
-       
+        
+        import sparkSession.sqlContext.implicits._
+        
         LOG.info("Import internal formal network parquet with: %s, %s"
                 .format(appContext.getNodesFilePath, appContext.getLinksFilePath))
         
-        var nodesDF = sparkSession.read.parquet(appContext.getNodesFilePath)    
-        var linksDF = sparkSession.read.parquet(appContext.getLinksFilePath)
+        var nodesDS = sparkSession.read.schema(Encoders.product[Node].schema).json(appContext.getNodesFilePath).as[Node]
+        var linksDS = sparkSession.read.schema(Encoders.product[Link].schema).json(appContext.getLinksFilePath).as[Link]
         if(appContext.getSpGraphRepartition > 0){
             LOG.info("Repartition graph vertices and edges with num partition = %d".format(appContext.getSpGraphRepartition))
-            nodesDF = nodesDF.repartition(appContext.getSpGraphRepartition)
-            linksDF = linksDF.repartition(appContext.getSpGraphRepartition)
+            nodesDS = nodesDS.repartition(appContext.getSpGraphRepartition)
+            linksDS = linksDS.repartition(appContext.getSpGraphRepartition)
         }
         
-        val nodesRDD = nodesDF.rdd.map(row => (row.getLong(0), Node.fromRow(row)))
-        val edgesRDD = linksDF.rdd.map(row => {
-            val link = Link.fromRow(row)
+        val nodesRDD = nodesDS.rdd.map(node => (node.getId, node))
+        val edgesRDD = linksDS.rdd.map(link => {
             Edge(link.getTail(),link.getHead(), link)
         })
 
         
         val graph = Graph(nodesRDD, edgesRDD)
-        ImportResult(graph, nodesDF, linksDF)
+        ImportResult(graph, nodesDS, linksDS)
     }
     
     

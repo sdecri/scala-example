@@ -1,4 +1,4 @@
-package com.sdc.scala_example.test.unit
+package com.sdc.graphx_example.test.unit
 
 import org.junit.Test
 import com.sdc.graphx_example.network._
@@ -7,12 +7,11 @@ import org.junit.Assert._
 import org.junit.runner.RunWith
 import org.junit.runners.BlockJUnit4ClassRunner
 import com.sdc.graphx_example.command_line.AppContext
-import com.sdc.graphx_example.osm.GraphParquetImporter
-import com.sdc.graphx_example.test.unit.TestWithSparkSession
+import com.sdc.graphx_example.osm.GraphImporter
 
 
 @RunWith(classOf[BlockJUnit4ClassRunner])
-class TestImportGraphParquet extends TestWithSparkSession {
+class TestImportGraph extends TestWithSparkSession {
     
     @Test
     def testImportGraph() = {
@@ -31,7 +30,7 @@ class TestImportGraphParquet extends TestWithSparkSession {
         appContext.setLinksFilePath(linksFile)
         appContext.setSpGraphRepartition(-1)
         
-        val network = GraphParquetImporter.importToNetwork(getSpark(), appContext)
+        val network = GraphImporter.importToNetwork(getSpark(), appContext)
         val graph = network.graph
         
         assertTrue(graph.vertices.count() > 0)

@@ -1,4 +1,4 @@
-package com.sdc.scala_example.test.unit
+package com.sdc.graphx_example.test.unit
 
 import org.junit.Test
 import com.sdc.graphx_example.network._
@@ -14,9 +14,9 @@ class TestLink {
     @Test
     def testLinkCreation() = {
         
-        var n1 = new Node(1, 1, 1)
-        var n2 = new Node(2, 2, 2)
-        var n3 = new Node(3, 3, 3)
+        var n1 = Node(1, SimplePoint(1f, 1f))
+        var n2 = Node(2, SimplePoint(2f, 2f))
+        var n3 = Node(3, SimplePoint(3f, 3f))
         
         var link1 : Link = Link(1, n1.getId(), n2.getId(), 100, 50, Array.empty)
         

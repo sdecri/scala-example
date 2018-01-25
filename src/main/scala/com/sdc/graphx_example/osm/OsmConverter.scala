@@ -11,13 +11,14 @@ import org.slf4j.LoggerFactory
 import com.sdc.graphx_example.command_line.AppContext
 import org.apache.spark.storage.StorageLevel
 import com.sdc.graphx_example.network.SimplePoint
+import com.sdc.graphx_example.network.Node
 
 /**
  * Class that import osm parquet produced with osm-parquetizer
  * <a href="http://wiki.openstreetmap.org/wiki/Osm-parquetizer">http://wiki.openstreetmap.org/wiki/Osm-parquetizer</a>
  * creating <code>Node</code> and <code>Link</code> dataframe.
  */
-object OsmParquetConverter {
+object OsmConverter {
     
     private type nodeType = (Int, Long, Double, Double)
     
@@ -40,7 +41,7 @@ object OsmParquetConverter {
         if(context.getOsmConverterPersistNodes){
             if (context.getNodesRepartitionOutput > 0)
                 nodeDF = nodeDF.repartition(context.getNodesRepartitionOutput)
-            nodeDF.write.mode(SaveMode.Overwrite).parquet(nodesParquetFilePath)
+            nodeDF.write.mode(SaveMode.Overwrite).json(nodesParquetFilePath)
         }
         println("Number of network nodes: %d".format(nodeDF.count()))
 
@@ -50,7 +51,7 @@ object OsmParquetConverter {
         if(context.getOsmConverterPersistLinks) {
             if (context.getLinksRepartitionOutput > 0)
                 linkDS = linkDS.repartition(context.getLinksRepartitionOutput)
-            linkDS.write.mode(SaveMode.Overwrite).parquet(linksParquetFilePath)
+            linkDS.write.mode(SaveMode.Overwrite).json(linksParquetFilePath)
         }
         val linkCounter = net._3
         println("Number of network links: %d".format(linkCounter.count))
@@ -64,8 +65,6 @@ object OsmParquetConverter {
 
     private def convertLinks(sparkSession : SparkSession, nodeDF : DataFrame, context :AppContext) = {
 
-        import sparkSession.sqlContext.implicits._
-
         val waysDF : Dataset[Row] = sparkSession.read.parquet(context.getOsmWaysFilePath)
         LOG.info("Number of all imported ways: %d".format(waysDF.count()))
 
@@ -75,27 +74,31 @@ object OsmParquetConverter {
         val roundAboutTag = "junction"
         val roundAboutValue = "roundabout"
         val roadTag = "highway"
-        val wayFiteredDF = waysDF.filter(array_contains($"tags.key", roadTag))
+        val wayFiteredDF = waysDF.filter(array_contains(col("tags.key"), roadTag))
 //        .where(($"id" === 26984518 || $"id" === 82222601 || $"id" === 138006028))
         
         
         
-        val wayNodesDF = wayFiteredDF.select($"id".as("wayId"), $"tags", explode($"nodes").as("indexedNode"))
+        val wayNodesDF = wayFiteredDF.select(col("id").as("wayId"), col("tags"), explode(col("nodes")).as("indexedNode"))
         .withColumn("linkId", monotonically_increasing_id())
         
         val totalBidirectionalLinks = wayNodesDF.count()
             
-        var nodeLinkJoinDF = nodeDF.join(wayNodesDF, $"indexedNode.nodeId" === nodeDF("id"))
+        var nodeLinkJoinDF = nodeDF.join(wayNodesDF, col("indexedNode.nodeId") === nodeDF("id"))
         nodeLinkJoinDF.cache()
-        var nodesInLinksDF = nodeLinkJoinDF.select($"indexedNode.nodeId".as("id"), $"latitude", $"longitude").dropDuplicates()
+        var nodesInLinksDF = nodeLinkJoinDF.select(col("indexedNode.nodeId").as("id"), col("latitude"), col("longitude")).dropDuplicates()
             
-        val wayDF = nodeLinkJoinDF.groupBy($"wayId", $"tags")
-        .agg(collect_list(struct($"indexedNode.index", $"indexedNode.nodeId", $"latitude", $"longitude")).as("nodes")
-        , collect_list($"linkId").as("linkIds"))
+        val wayDF = nodeLinkJoinDF.groupBy(col("wayId"), col("tags"))
+        .agg(collect_list(struct(col("indexedNode.index"), col("indexedNode.nodeId"), col("latitude"), col("longitude"))).as("nodes")
+        , collect_list(col("linkId")).as("linkIds"))
         
         val linkCounter = sparkSession.sparkContext.longAccumulator("linkCounter")
         
-        var linkDF = wayDF.flatMap((row : Row) => {
+        
+        
+        
+        var linkDF :Dataset[Link] =            
+            wayDF.flatMap((row : Row) => {
 
             var links : List[Link] = List.empty[Link]
             var tagsMap = Map.empty[String, String]
@@ -142,34 +145,41 @@ object OsmParquetConverter {
                     LOG.error("Error processing way %d. Tags: %s".format(row.getLong(0), tagsMap.mkString(" | ")), e)
                 }
             }
+            
             links
-        }).toDF()
+            
+        })(Encoders.product[Link])
         
         linkDF.persist(StorageLevel.MEMORY_AND_DISK)
         
         // fill tail coordinates
-        val linkWithTailDF = linkDF.alias("links").join(nodesInLinksDF.alias("nodes.*"), linkDF("tail") === nodeDF("id"))
-        .select($"links.*", $"nodes.longitude".as("tail_lon"), $"nodes.latitude".as("tail_lat"))
+        val linkWithTailDF = linkDF.alias("links").join(nodesInLinksDF.alias("nodes"), col("links.tail") === col("nodes.id"))
+        .select(col("links.*"), col("nodes.longitude").as("tail_lon"), col("nodes.latitude").as("tail_lat"))
         
-        val linkWithTailHeadDF = linkWithTailDF.alias("links").join(nodesInLinksDF.alias("nodes.*"), linkDF("head") === nodeDF("id"))
-        .select($"links.*", $"nodes.longitude".as("head_lon"), $"nodes.latitude".as("head_lat"))
+        val linkWithTailHeadDF = linkWithTailDF.alias("links").join(nodesInLinksDF.alias("nodes"), col("links.head") === col("nodes.id"))
+        .select(col("links.*"), col("nodes.longitude").as("head_lon"), col("nodes.latitude").as("head_lat"))
         
         
-        var linkDS = linkWithTailHeadDF.map( (row:Row) => {
+        
+        var linkDS = linkWithTailHeadDF.map((row :Row) => {
             
-            val points = Array(SimplePoint(row.getFloat(5), row.getFloat(6)), SimplePoint(row.getFloat(7), row.getFloat(8)))
+            val points = Array(SimplePoint(row.getDouble(6).toFloat, row.getDouble(7).toFloat)
+                    , SimplePoint(row.getDouble(8).toFloat, row.getDouble(9).toFloat))
             
-            Link(row.getLong(0)
+            val link = Link(row.getLong(0)
                     , row.getLong(1)
                     , row.getLong(2)
                     , row.getFloat(3)
                     , row.getFloat(4)
                     , points)
+                    
+            link
             
-        })
+        })(Encoders.product[Link])
         
-
-        (nodesInLinksDF, linkDS, linkCounter)
+        var nodeDS = nodesInLinksDF.map((r:Row) => Node(r.getLong(0), SimplePoint(r.getDouble(2).toFloat, r.getDouble(1).toFloat)))(Encoders.product[Node])
+        
+        (nodeDS, linkDS, linkCounter)
     }
     
     
