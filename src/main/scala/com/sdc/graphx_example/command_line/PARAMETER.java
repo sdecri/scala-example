@@ -28,6 +28,9 @@ public enum PARAMETER {
     ,OSM_CONVERTER_PERSIST_LINKS ("osmc-persist-links"
             , String.format("If true perssist the converted links. Default = %s",ParameterDefault.DEFAULT_OSM_CONVERTER_PERSIST_LINKS)
             , true, Boolean.class, false)    
+    ,OSM_CONVERTER_NETWORK_OUTPUT_FORMAT( "osmc-net-out-format",String.format("Network output format. Available values: %s."
+            , Arrays.toString(com.sdc.graphx_example.command_line.NETWORK_OUTPUT_FORMAT.getValues().toArray()))
+            , true, String.class, false)
     ,SP_COST_FUNCTION ("sp-cost-function","Repartition of the converted (from link) links.", true, String.class, false)    
     ,SP_SOURCE_LON ("sp-source-lon","Longitude in wgs84 of the shortest path source point", true, Integer.class, false)
     ,SP_SOURCE_LAT ("sp-source-lat","Latitude in wgs84 of the shortest path source point", true, Integer.class, false)    

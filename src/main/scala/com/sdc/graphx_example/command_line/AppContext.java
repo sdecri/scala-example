@@ -35,13 +35,19 @@ public class AppContext {
     private String osmWaysFilePath;
     private String nodesFilePath;
     private String linksFilePath;
+    private NETWORK_OUTPUT_FORMAT networkOutputFormat;
     private Integer nodesRepartitionOutput;
     private Integer linksRepartitionOutput;
     private Boolean osmConverterPersistNodes;
     private Boolean osmConverterPersistLinks;
     private Integer spRandomGraphNumVertices;
     private Integer spGraphRepartition;
-    
+    private String outputDir;
+    private String costFunction;
+    private Point spSource;
+    private Integer spNearestDistance;
+    private Integer spNearestAttempts;
+    private Integer spNearestFactor;
     
     
     /**
@@ -113,16 +119,6 @@ public class AppContext {
         this.osmConverterPersistLinks = osmConverterPersistLinks;
     }
 
-    private String outputDir;
-    private String costFunction;
-    private Point spSource;
-    private Integer spNearestDistance;
-    private Integer spNearestAttempts;
-    private Integer spNearestFactor;
-    
-
-
-    
     
     /**
      * @return the {@link AppContext#spNearestDistance}
@@ -347,4 +343,24 @@ public class AppContext {
         this.outputDir = outputDir;
     }
 
+    
+    /**
+     * @return the {@link AppContext#networkOutputFormat}
+     */
+    public NETWORK_OUTPUT_FORMAT getNetworkOutputFormat() {
+    
+        return networkOutputFormat;
+    }
+
+    
+    /**
+     * @param networkOutputFormat the {@link AppContext#networkOutputFormat} to set
+     */
+    public void setNetworkOutputFormat(NETWORK_OUTPUT_FORMAT networkOutputFormat) {
+    
+        this.networkOutputFormat = networkOutputFormat;
+    }
+
+    
+    
 }

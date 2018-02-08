@@ -10,13 +10,15 @@ import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.types.LongType
+import org.apache.spark.sql.types.FloatType
+import org.apache.spark.sql.Encoders
 
 case class Node(id :Long, point :SimplePoint) extends Serializable {
 
     def getId(): Long = this.id
     def getPoint() :SimplePoint = this.point
 
-    def toRow(): Row = Row(id, point)
+    def toRow(): Row = Row(id, point.lon, point.lat)
     
     override def hashCode(): Int = id.toInt
 
@@ -35,13 +37,17 @@ case class Node(id :Long, point :SimplePoint) extends Serializable {
 
 object Node {
     
-//    val SCHEMA = StructType(
-//        List(
-//                StructField("id", LongType)
-//                , StructField("latitude", DoubleType)
-//                , StructField("longitude", DoubleType)
-//        )        
-//    )
+    val ENCODER = Encoders.product[Node]
+    
+    val CSV_OPTIONS = Map("header" -> "true")
+    
+    val SCHEMA_CSV = StructType(
+        List(
+                StructField("id", LongType)
+                , StructField("lon", FloatType)
+                , StructField("lat", FloatType)
+        )        
+    )
     
     val POINT = "point"
     
@@ -50,10 +56,10 @@ object Node {
         return if (l.isEmpty) None else Some(l(0))
     }
     
-//    def fromRow(row :Row) : Node = 
-//        new Node(row.getLong(0)
-//                , row.getDouble(1)
-//                , row.getDouble(2))
+    def fromRow(row :Row) : Node = 
+        new Node(row.getLong(0), SimplePoint(
+                row.getFloat(1)
+                , row.getFloat(2)))
     
 }
 

@@ -14,6 +14,7 @@ import com.sdc.graphx_example.App
 import com.sdc.graphx_example.shortestpath.ShortestPathProcess
 import org.apache.spark.sql.functions._
 import com.sdc.graphx_example.test.unit.TestWithSparkSession
+import com.sdc.graphx_example.command_line.ParameterDefault
 
 @RunWith(classOf[BlockJUnit4ClassRunner])
 class TestShortestPathProcess extends TestWithSparkSession {
@@ -42,12 +43,12 @@ class TestShortestPathProcess extends TestWithSparkSession {
 
         val args = ("--spark-master local --run-type %s --nodes-file %s --links-file %s" + 
         " --sp-source-lon %f --sp-source-lat %f " + 
-        " --sp-nearest-distance %d --sp-cost-function %s --output-dir %s")
+        " --sp-nearest-distance %d --sp-cost-function %s --output-dir %s --osmc-net-out-format %s")
             .format(RUN_TYPE.SHORTEST_PATH_SINGLE_SOURCE_FORWARD.getValue, fileUrlNodes, fileUrlLinks
                     , 12.53685, 41.89721
                     , 100
                     , ShortestPathSingleSourceForward.COST_FUNCTION.DISTANCE.toString()
-                    , outputDir)
+                    , outputDir, ParameterDefault.DEFAULT_NETWORK_OUTPUT_FORMAT.getValue)
 
         App.main(args.split(" "))
         
@@ -108,9 +109,9 @@ class TestShortestPathProcess extends TestWithSparkSession {
         
 
         val args = ("--spark-master local --run-type %s --nodes-file %s --links-file %s" + 
-        " --sp-source-lon %f --sp-source-lat %f --output-dir %s")
+        " --sp-source-lon %f --sp-source-lat %f --output-dir %s --osmc-net-out-format %s")
             .format(RUN_TYPE.SHORTEST_PATH_STANDARD.getValue, fileUrlNodes, fileUrlLinks
-                    , 12.53685, 41.89721, outputDir)
+                    , 12.53685, 41.89721, outputDir, ParameterDefault.DEFAULT_NETWORK_OUTPUT_FORMAT.getValue)
 
         App.main(args.split(" "))
         
@@ -170,11 +171,11 @@ class TestShortestPathProcess extends TestWithSparkSession {
 
         val args = ("--spark-master local --run-type %s --nodes-file %s --links-file %s" + 
         " --sp-source-lon %f --sp-source-lat %f --sp-cost-function %s" + 
-        " --sp-graph-repartition %d --output-dir %s")
+        " --sp-graph-repartition %d --output-dir %s --osmc-net-out-format %s")
             .format(RUN_TYPE.SHORTEST_PATH_CUSTOM_COST_FUCNTION.getValue, fileUrlNodes, fileUrlLinks
                     , 12.53685, 41.89721
                     , ShortestPathSingleSourceForward.COST_FUNCTION.DISTANCE.toString()
-                    , -1, outputDir)
+                    , -1, outputDir, ParameterDefault.DEFAULT_NETWORK_OUTPUT_FORMAT.getValue)
 
         App.main(args.split(" "))
         
@@ -233,8 +234,8 @@ class TestShortestPathProcess extends TestWithSparkSession {
         val fileUrlLinks = this.getClass().getResource(fileResourceLinks);
         
 
-        val args = ("--spark-master local --run-type %s --sp-random-graph-num-vertices %d --output-dir %s")
-            .format(RUN_TYPE.SHORTEST_PATH_RANDOM_GRAPH.getValue, 100, outputDir)
+        val args = ("--spark-master local --run-type %s --sp-random-graph-num-vertices %d --output-dir %s --osmc-net-out-format %s")
+            .format(RUN_TYPE.SHORTEST_PATH_RANDOM_GRAPH.getValue, 100, outputDir, ParameterDefault.DEFAULT_NETWORK_OUTPUT_FORMAT.getValue)
 
         App.main(args.split(" "))
         

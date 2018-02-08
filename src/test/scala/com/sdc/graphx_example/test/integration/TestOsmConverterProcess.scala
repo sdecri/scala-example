@@ -14,13 +14,25 @@ import java.util.stream.Collectors
 import scala.collection.mutable.WrappedArray
 import java.util.Arrays
 import com.sdc.graphx_example.test.unit.TestWithSparkSession
+import com.sdc.graphx_example.command_line.NETWORK_OUTPUT_FORMAT
+import org.apache.spark.sql.Dataset
+import org.apache.spark.sql.Dataset
 
 
 @RunWith(classOf[BlockJUnit4ClassRunner])
 class TestOsmConverterProcess extends TestWithSparkSession{
     
     @Test
-    def testProcess() = {
+    def testCsv() = {
+        testProcess(NETWORK_OUTPUT_FORMAT.CSV)
+    }
+    
+    @Test
+    def testJson() = {
+        testProcess(NETWORK_OUTPUT_FORMAT.JSON)
+    }
+    
+    private def testProcess(netOututFormat :NETWORK_OUTPUT_FORMAT) = {
 
         val session = getSpark()
         import session.sqlContext.implicits._
@@ -44,8 +56,9 @@ class TestOsmConverterProcess extends TestWithSparkSession{
         
         val args = ("--spark-master local --run-type %s --osm-nodes-file %s --osm-ways-file %s" + 
             " --osmc-links-repartition-output %d --osmc-nodes-repartition-output %d --output-dir %s" +
-            " --osmc-persist-links true")
-            .format(RUN_TYPE.OSM_CONVERTER.getValue, fileUrlNodes, fileUrlWays, linksRepartition, nodesRepartition, outputDir)
+            " --osmc-persist-links true --osmc-net-out-format %s")
+            .format(RUN_TYPE.OSM_CONVERTER.getValue, fileUrlNodes, fileUrlWays
+                    , linksRepartition, nodesRepartition, outputDir, netOututFormat.getValue)
 
         App.main(args.split(" "))
         
@@ -56,7 +69,17 @@ class TestOsmConverterProcess extends TestWithSparkSession{
         assertTrue(expectedNodesFile.exists())
         assertTrue(expectedNodesFile.isDirectory())
 
-        val nodesDF = getSpark().read.json(expectedNodesFile.getAbsolutePath).orderBy("id")
+        val nodeFilePath = expectedNodesFile.getAbsolutePath
+        
+        var nodesDF :Dataset[Row] = null
+        
+        if (netOututFormat == NETWORK_OUTPUT_FORMAT.JSON)
+            nodesDF = getSpark().read.json(nodeFilePath)
+        else
+            nodesDF = getSpark().read.schema(Node.SCHEMA_CSV).options(Node.CSV_OPTIONS)
+            .csv(nodeFilePath).map(r => Node.fromRow(r))(Node.ENCODER).toDF()
+        
+        nodesDF = nodesDF.orderBy("id")
         nodesDF.cache()
         nodesDF.show()
         assertTrue(nodesDF.count() > 0)
@@ -66,10 +89,17 @@ class TestOsmConverterProcess extends TestWithSparkSession{
         assertTrue(expectedLinksFile.isDirectory())
 
         val linkParquetFiles = expectedLinksFile.listFiles()
-        val outputFiles = linkParquetFiles.filter(f => f.getPath().endsWith(".json"));
+        val outputFiles = linkParquetFiles.filter(f => f.getPath().endsWith(".%s".format(netOututFormat.getValue)));
         assertEquals(linksRepartition, outputFiles.length);
 
-        val linksDF = getSpark().read.json(expectedLinksFile.getAbsolutePath)
+        var linksDF :Dataset[Row] = null
+
+        if (netOututFormat == NETWORK_OUTPUT_FORMAT.JSON)
+            linksDF = getSpark().read.json(expectedLinksFile.getAbsolutePath)
+        else
+            linksDF = getSpark().read.schema(Link.SCHEMA_CSV).options(Link.CSV_OPTIONS)
+            .csv(expectedLinksFile.getAbsolutePath).map((r :Row) => Link.fromRow(r))(Link.ENCODER).toDF()
+            
         linksDF.cache
         linksDF.printSchema()
         linksDF.show()
@@ -84,7 +114,14 @@ class TestOsmConverterProcess extends TestWithSparkSession{
             val pointsRaw = row.getAs[WrappedArray[Row]](0)
 
             val points = pointsRaw
-                .map(r => SimplePoint(r.getDouble(0).toFloat, r.getDouble(1).toFloat)).toArray
+                .map(r => {
+
+                        if (netOututFormat == NETWORK_OUTPUT_FORMAT.CSV)
+                            SimplePoint(r.getFloat(0), r.getFloat(1))
+                        else
+                            SimplePoint(r.getDouble(0).toFloat, r.getDouble(1).toFloat)
+                    
+                }).toArray
 
             points
             

@@ -163,6 +163,11 @@ public class CommandLineManager {
         
         appContext.setSparkMaster(cli.getOptionValue(PARAMETER.SPARK_MASTER.getLongOpt()));
 
+        String networkOutputFormatValue = cli.getOptionValue(PARAMETER.OSM_CONVERTER_NETWORK_OUTPUT_FORMAT.getLongOpt());
+        NETWORK_OUTPUT_FORMAT networkOutputFormat = ParameterParser.parse(PARAMETER.OSM_CONVERTER_NETWORK_OUTPUT_FORMAT, networkOutputFormatValue, input -> NETWORK_OUTPUT_FORMAT.parse(input));
+        appContext.setNetworkOutputFormat(networkOutputFormat);
+        
+        
         appContext.setOsmNodesFilePath(cli.getOptionValue(PARAMETER.OSM_NODES_FILE.getLongOpt()));
         appContext.setOsmWaysFilePath(cli.getOptionValue(PARAMETER.OSM_WAYS_FILE.getLongOpt()));
         appContext.setNodesFilePath(cli.getOptionValue(PARAMETER.NODES_FILE.getLongOpt()));

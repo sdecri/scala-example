@@ -12,6 +12,7 @@ import com.sdc.graphx_example.command_line.AppContext
 import org.apache.spark.storage.StorageLevel
 import com.sdc.graphx_example.network.SimplePoint
 import com.sdc.graphx_example.network.Node
+import com.sdc.graphx_example.command_line.NETWORK_OUTPUT_FORMAT
 
 /**
  * Class that import osm parquet produced with osm-parquetizer
@@ -36,22 +37,39 @@ object OsmConverter {
         
         var net = convertLinks(sparkSession, allNodeDF, context)
         
-        val nodesParquetFilePath = context.getOutputDir + "nodes"
-        var nodeDF = net._1
+        val nodesOutputFilePath = context.getOutputDir + "nodes"
+        var nodeDS = net._1
         if(context.getOsmConverterPersistNodes){
             if (context.getNodesRepartitionOutput > 0)
-                nodeDF = nodeDF.repartition(context.getNodesRepartitionOutput)
-            nodeDF.write.mode(SaveMode.Overwrite).json(nodesParquetFilePath)
-        }
-        println("Number of network nodes: %d".format(nodeDF.count()))
+                nodeDS = nodeDS.repartition(context.getNodesRepartitionOutput)
 
-        
-        val linksParquetFilePath = context.getOutputDir + "links"
+            if (context.getNetworkOutputFormat == NETWORK_OUTPUT_FORMAT.CSV) {
+                
+                sparkSession.createDataFrame(nodeDS.rdd.map(_.toRow()), Node.SCHEMA_CSV)
+                .write.options(Node.CSV_OPTIONS).mode(SaveMode.Overwrite)
+                .csv(nodesOutputFilePath)
+                
+            }else
+                nodeDS.write.mode(SaveMode.Overwrite).json(nodesOutputFilePath)
+                
+        }
+        println("Number of network nodes: %d".format(nodeDS.count()))
+
+        val linksOutputFilePath = context.getOutputDir + "links"
         var linkDS = net._2
         if(context.getOsmConverterPersistLinks) {
             if (context.getLinksRepartitionOutput > 0)
                 linkDS = linkDS.repartition(context.getLinksRepartitionOutput)
-            linkDS.write.mode(SaveMode.Overwrite).json(linksParquetFilePath)
+            if(context.getNetworkOutputFormat == NETWORK_OUTPUT_FORMAT.CSV){
+                
+                sparkSession.createDataFrame(linkDS.rdd.map(_.toRow), Link.SCHEMA_CSV)
+                .write.options(Link.CSV_OPTIONS).mode(SaveMode.Overwrite)
+                .csv(linksOutputFilePath)
+                
+            }
+            else
+                linkDS.write.mode(SaveMode.Overwrite).json(linksOutputFilePath)
+            
         }
         val linkCounter = net._3
         println("Number of network links: %d".format(linkCounter.count))

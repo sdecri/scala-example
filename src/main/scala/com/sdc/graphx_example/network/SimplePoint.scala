@@ -5,13 +5,14 @@ import org.apache.spark.sql.types.StructField
 import jdk.nashorn.internal.codegen.types.LongType
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.FloatType
+import com.vividsolutions.jts.geom.Coordinate
 
 case class SimplePoint(lon: Float, lat: Float ) extends Serializable{
     
     override def toString() :String = "%f%s%f"
     .format(lon, SimplePoint.COORDINATES_SEPATARO, lat)
 
-    
+    def toCoordinate() :Coordinate = new Coordinate(lon, lat)
 }
 
 
