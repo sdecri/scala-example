@@ -47,6 +47,8 @@ object App {
     
     def main(args : Array[String]) {
 
+        println(args.mkString(", "))
+        
         LOG.info("#################################### START ####################################");
 
         // read data from command line

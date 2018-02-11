@@ -33,7 +33,6 @@ public class CommandLineManager {
     
     private String[] arguments;
     private Options options;
-    private Option optionHelp;
     private CommandLine cli;
     /**
      * <code>true</code> if the last call of the method {@link CommandLineManager#read(String[])}
@@ -54,13 +53,10 @@ public class CommandLineManager {
     }
 
 
-    @SuppressWarnings("static-access")
     private void initOptions() {
 
         options = new Options();
 
-        optionHelp = OptionBuilder.withLongOpt("help").hasArg(false).withDescription("shows this message").create("h");
-        options.addOption(optionHelp);
 
         PARAMETER[] parameters = PARAMETER.values();
 
@@ -125,15 +121,19 @@ public class CommandLineManager {
 
         CommandLineParser commandLineParser = new BasicParser();
         CommandLine commandLine = null;
+        @SuppressWarnings("static-access")
+        Option optionHelp = OptionBuilder.withLongOpt("help").hasArg(false).withDescription("shows this message").create("h");
+
         Options options = new Options();
         options.addOption(optionHelp);
         try {
-            commandLine = commandLineParser.parse(options, arguments, true);
+            commandLine = commandLineParser.parse(options, arguments, false);
         }
         catch (ParseException e) {
             throw new CommandLineManagerException(String.format("Error checking for %s option", optionHelp.getLongOpt()), e);
         }
-        boolean hasHelp = commandLine.hasOption(optionHelp.getOpt()); 
+        boolean hasHelp = commandLine.hasOption(optionHelp.getOpt()) || commandLine.hasOption(optionHelp.getLongOpt()); 
+        LOG.info(String.format("Has help: %s", hasHelp));
         if (hasHelp)
             printHelp();
         
