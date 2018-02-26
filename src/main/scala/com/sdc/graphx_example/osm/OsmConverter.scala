@@ -13,6 +13,7 @@ import org.apache.spark.storage.StorageLevel
 import com.sdc.graphx_example.network.SimplePoint
 import com.sdc.graphx_example.network.Node
 import com.sdc.graphx_example.command_line.NETWORK_OUTPUT_FORMAT
+import com.sdc.graphx_example.network.DrivingDirection
 
 /**
  * Class that import osm parquet produced with osm-parquetizer
@@ -181,14 +182,16 @@ object OsmConverter {
         
         var linkDS = linkWithTailHeadDF.map((row :Row) => {
             
-            val points = Array(SimplePoint(row.getDouble(6).toFloat, row.getDouble(7).toFloat)
-                    , SimplePoint(row.getDouble(8).toFloat, row.getDouble(9).toFloat))
-            
+            val points = Array(SimplePoint(row.getDouble(7).toFloat, row.getDouble(8).toFloat)
+                    , SimplePoint(row.getDouble(9).toFloat, row.getDouble(10).toFloat))
+                    
+                    
             val link = Link(row.getLong(0)
                     , row.getLong(1)
                     , row.getLong(2)
                     , row.getFloat(3)
                     , row.getFloat(4)
+                    , DrivingDirection.START2END.getValue
                     , points)
                     
             link
@@ -209,7 +212,7 @@ object OsmConverter {
         val headLat = head._4
 
         val length = GeometryUtils.getDistance(tailLon, tailLat, headLon, headLat)
-        Link(linkId, tail._2, head._2, length.toFloat, speed.toFloat, null)
+        Link(linkId, tail._2, head._2, length.toFloat, speed.toFloat, null, null)
     }
     
     

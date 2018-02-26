@@ -23,18 +23,18 @@ class TestShortestPath extends TestWithSparkSession {
 
     
     def createLinks(nodes : List[com.sdc.graphx_example.network.Node]) = List(
-        new Link(1, 1, 3, 20, 10, Array.empty)
-        , new Link(2, 1, 2, 40, 10, Array.empty)
-        , new Link(3, 3, 2, 10, 10, Array.empty)
-        , new Link(4, 2, 5, 50, 10, Array.empty)
-        , new Link(5, 3, 4, 30, 10, Array.empty)
-        , new Link(6, 3, 6, 60, 10, Array.empty)
-        , new Link(7, 2, 4, 10, 10, Array.empty)
-        , new Link(8, 5, 4, 40, 10, Array.empty)
-        , new Link(9, 4, 5, 20, 10, Array.empty)
-        , new Link(10, 4, 6, 20, 10, Array.empty)
-        , new Link(11, 5, 6, 50, 10, Array.empty)
-        , new Link(12, 4, 6, 30, 10, Array.empty)
+        new Link(1, 1, 3, 20, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(2, 1, 2, 40, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(3, 3, 2, 10, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(4, 2, 5, 50, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(5, 3, 4, 30, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(6, 3, 6, 60, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(7, 2, 4, 10, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(8, 5, 4, 40, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(9, 4, 5, 20, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(10, 4, 6, 20, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(11, 5, 6, 50, 10, DrivingDirection.START2END.getValue, Array.empty)
+        , new Link(12, 4, 6, 30, 10, DrivingDirection.START2END.getValue, Array.empty)
     )
 
     def createNodes() : List[Node] = List(Node(1, SimplePoint(1f, 1f)), Node(2, SimplePoint(3.0f, 0.0f)),

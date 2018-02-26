@@ -127,7 +127,7 @@ public class CommandLineManager {
         Options options = new Options();
         options.addOption(optionHelp);
         try {
-            commandLine = commandLineParser.parse(options, arguments, false);
+            commandLine = commandLineParser.parse(options, arguments, true);
         }
         catch (ParseException e) {
             throw new CommandLineManagerException(String.format("Error checking for %s option", optionHelp.getLongOpt()), e);
