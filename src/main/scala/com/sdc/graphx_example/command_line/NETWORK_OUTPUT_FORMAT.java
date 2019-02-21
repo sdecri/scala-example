@@ -27,7 +27,7 @@ public enum NETWORK_OUTPUT_FORMAT {
     }
     
     /**
-     * @return the {@link OSM_CONVERTER_NETWORK_OUTPUT_FORMAT#value}
+     * @return the {@link NETWORK_OUTPUT_FORMAT#value}
      */
     public String getValue() {
     

@@ -141,12 +141,6 @@ public class CommandLineManager {
 
     }
 
-    /**
-     * 
-     * @param mdfSparkSession
-     * @return {@link MdfSparkJobContext}
-     * @throws CommandLineManagerException
-     */
     public AppContext parse() throws CommandLineManagerException {
 
         LOG.info("Parsing command line parameters...");
